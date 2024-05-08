@@ -2,11 +2,18 @@ from openai import OpenAI
 from pytube import YouTube
 from pathlib import Path
 import pyttsx3
+from dotenv import load_dotenv
+import os
 
+
+load_dotenv()
+CLIENT_ID = os.getenv("CLIENT_ID")
+CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
 def say(text):
     print(text,"\n")
     engine = pyttsx3.init()
+    
     engine.say(text)
     engine.runAndWait()
 
