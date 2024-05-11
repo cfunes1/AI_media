@@ -22,11 +22,6 @@
 
 # Ignore user-specific files
 /.env
-/.env.local
-/.env.*.local
-/.env.development.local
-/.env.test.local
-/.env.production.local
 
 # Ignore operating system files
 .DS_Store
@@ -47,3 +42,6 @@ credentials.json
 # Ignore any other project-specific files or directories
 /env/
 /__pycache__/
+/.mypy_cache/
+/.pytest_cache/
+/media/
