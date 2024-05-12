@@ -17,8 +17,6 @@ def main():
     
     print("Downloading video...\n")
 
-    download_path = Path(__file__).parent / "media"
-
     video_stream = get_video_stream(url,audio_only=True)
     download_full_path = video_stream.download(output_path="./media")
     
