@@ -65,7 +65,10 @@ def get_video_stream(youtube_url: str, audio_only: bool=False) -> pytube.Stream:
 
 def on_progress(stream, chunk, bytes_remaining) -> None:
     """Print the download progress of the video."""
-    print(bytes_remaining)
+    total_size = stream.filesize
+    bytes_downloaded = total_size - bytes_remaining
+    perc_completed = (bytes_downloaded / total_size) * 100                        
+    print()
 
 def on_complete(stream, file_path) -> None:
     """Print the completion of the download."""
