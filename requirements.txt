@@ -1,9 +1,12 @@
 openai
 pytube
 python-dotenv
+os
 mypy
-pytest
+typing
 pydub
-fpdf
 requests
 pillow
+io
+pytest
+time

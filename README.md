@@ -1,26 +1,38 @@
 # AI_media documentation
-### Video Demo:  <URL HERE>
-### Description: 
+## Video Demo:  <URL HERE>
+## Description: 
  Today, there are no limits to what users can learn from YouTube... except time. AI_Media is a python tool and library designed to help users consume YouTube content more efficiently.
 
 AI_Media leverages generative AI models from Open AI and several Python libraries to compile and summarize the content of any YouTube video into various media formats: text, audio, and images. These summary documents enable users to quickly grasp the essence of a video in their preferred format, allowing them do decide whether it's worth watching the video in its original form and length. AI_Media empowers users to make the most of their time by delivering multi-format overviews of YouTube content. 
 
-### Functionality
+## Functionality
 For any YouTube video that the user selects, AI_media generates the following artifacts (prefixed by the YouTube video ID) :
 
-1. Audio.mp4: Sound of original video, cut to 10 mins if more than 10 mins, as an mp4 file. 
-1. [original language].txt: AI-generated transcription from audio in original language (if not in English) as a text file.
-1. English.txt: AI-generated transcription from audio in English as a text file. 
-1. Summary.txt: AI-generated summary of English trascription as a text file. 
-1. Summary.mp3: AI-generated sound narration of the english summary as an mp3 file. 
-1. Summary.png: AI-generated picture conveying the ideas of the english summary as a png image.
+1. **Audio.mp4**: Sound of original video, cut to 10 mins if more than 10 mins, as an mp4 file. 
+1. **[original language].txt**: AI-generated transcription from audio in original language as a text file. Only generated if original language is not English.
+1. **English.txt**: AI-generated transcription from audio in English as a text file. 
+1. **Summary.txt**: AI-generated summary of English trascription as a text file. 
+1. **Summary.mp3**: AI-generated sound narration of the english summary as an mp3 file. 
+1. **Image.png**: AI-generated picture conveying the ideas of the english summary as a png image.
 
 ### Arguments
+```
+usage: project.py [-h] [-np] [-nt] [-na] [-ni] url
 
+Analize and summarize a youtube video
 
+positional arguments:
+  url              URL of youtube video to summarize
+
+options:
+  -h, --help       show this help message and exit
+  -np, --no-play   Do not play the audio summary
+  -nt, --no-text   Do not generate text files
+  -na, --no-audio  Do not generate audio files
+  -ni, --no-image  Do not generate image files
+```
 
 ### Functions
-
 
 AI_media tools are implemented as functions that can be accesed via command line arguments or by importing them into a python script. 
 
