@@ -1,0 +1,9 @@
+openai
+pytube
+python-dotenv
+mypy
+pytest
+pydub
+fpdf
+requests
+pillow
