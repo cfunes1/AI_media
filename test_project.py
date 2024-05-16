@@ -47,6 +47,9 @@ def test_speech_to_text():
     assert translation.text.lower().strip().startswith("the sun rises")
     assert translation.language == "english"
 
+def save_text_to_file():
+    with pytest.raises(ValueError):
+        assert project.save_text_to_file("","")
 
 def test_summarize_text():
     with pytest.raises(ValueError):
