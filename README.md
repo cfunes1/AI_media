@@ -9,10 +9,10 @@ AI_Media leverages generative AI models from Open AI and several Python librarie
 For any YouTube video that the user selects, AI_media generates the following artifacts (prefixed by the YouTube video ID) :
 
 1. **Audio.mp4**: Sound of original video, cut to 10 mins if more than 10 mins, as an mp4 file. 
-1. **[original language].txt**: AI-generated transcription from audio in original language as a text file. Only generated if original language is not English.
+1. **[original language].txt**: AI-generated transcription from audio in original language as a text file. Only available if original language is not English.
 1. **English.txt**: AI-generated transcription from audio in English as a text file. 
 1. **Summary.txt**: AI-generated summary of English trascription as a text file. 
-1. **Summary.mp3**: AI-generated sound narration of the english summary as an mp3 file. 
+1. **Summary.mp3**: AI-generated sound narration of the English summary as an mp3 file. 
 1. **Image.png**: AI-generated picture conveying the ideas of the english summary as a png image.
 
 ### Arguments
@@ -32,154 +32,101 @@ options:
   -ni, --no-image  Do not generate image files
 ```
 
+### Files
+
+- **.gitignore**: files to be ignored by source control. Includes, for example, the name of the file (.env) where the OpenAI API security  keys are stored. 
+
+- **project.py**: includes main() and all the functions called in main. It can be used as a module to access the different tools. 
+
+- **README.md**: this file
+
+- **requirements.txt**: a list of the library requirements of the project.
+
+- **test_project**: tests for projext.py to be used with pytest
+
+- **.env**: contains OpenAI security keys. Not included in source control. 
+
 ### Functions
 
 AI_media tools are implemented as functions that can be accesed via command line arguments or by importing them into a python script. 
 
 AI_media implements type hints and docstrings accross all functions.
 
-#### def get_video(_url_: str) -> pytube.YouTube:
+1. #### def get_video(_url_: str) -> pytube.YouTube:
    
-   > Returns a YouTube object as defined in the pytube library, for the _url_ provided. 
+   Returns a YouTube object, as defined in the pytube library, for the _url_ provided. This object allows access to  various streams in different formats and resolutions available for each video. 
 
-#### def save_smallest_audio_stream(ytObject: pytube.YouTube, media_dir: str, filename: str) -> str:
+1. #### def save_smallest_audio_stream(_ytObject_: pytube.YouTube, *media_dir*: str, _filename_: str) -> str:
    
-> Get the smaller audio stream of a youtube video.
+   Finds the smallest audio stream for the youtube video stored in _ytObject_, and downloads it as _filename_ in the *media_dir* directory. 
 
-#### def on_progress(stream, chunk, bytes_remaining) -> None:
->Print the download progress of the video.
+   > **Design choices**: Since some OpenAI APIs used in transcriptions and translations have limits on the size of the input audio file, it was important to keep sizes small. Hence the use of the smallest audio stream available for each video. While there was a concern about the impact of this in the quality of the AI-generated transcriptions, tests showed no impact in the quality the transcriptions compared with high resolution audio streams. 
 
-#### def on_complete(stream, file_path) -> None:
-> Notifies of download completion.
+1. #### def on_progress(stream, chunk, bytes_remaining) -> None:
+   Prints the download progress of the video.
 
-#### def cut_file(download_full_path: str, max_duration_secs: int) -> bool:
-> Reduce length of file to max duration if needed
+1. #### def on_complete(stream, file_path) -> None:
+   Notifies user of download completion.
 
-#### def speech_to_text(filename: str):
-> Convert speech to text using OpenAI's library.
+1. #### def cut_file(*download_full_path*: str, *max_duration_secs*: int) -> bool:
+   Evaluates length of audio file stored in *download_full_path* leveraging pydub library. If duration in seconds is more than *max_duration_secs*, it cuts the length of the file to the maximum duration and returns True. Otherwise, the file remains untouched and the function returns False. 
+   > **Design choices**: Because of the performance and cost limitations of the current OpenAI models, the decision was made to limit all audio files to a maximum of 10 mins. The AI is able to get a good grasp of the content of long videos based on the first 10 mins alone. But the expectation is that this limit will be extended or totally removed in the short term future, as generative AI models improve.    
 
-#### def speech_to_English_text(filename: str):
-> Convert speech to English text using OpenAI's library.
+1. #### def speech_to_text(filename: str):
+   Converts speech found in audio file *filename* to text using OpenAI's **Whisper-1** model and APIs. Returns a Transcription object, which stores both the transcribed text, and the language detected by the AI. 
 
-#### def save_text_to_file(text: str, destination: str) -> None:
-> Save text to a file.
+1. #### def speech_to_English_text(filename: str):
+   Converts speech found in audio file *filename* to English using OpenAI's **Whisper-1** model and APIs. Returns a Translation object that includes the translated text. 
 
-#### def summarize_text(english_txt: str) -> str | None:
-> Summarize text using OpenAI's library.
+1. #### def summarize_text(english_txt: str) -> str | None:
+   Summarizes _text_ using OpenAI's library. This is accomplished via a short chat with Open AI's **GPT 3.5 Turbo** model. Returns a text summary. 
 
-#### def cut_text(text: str, max_chars: int) -> str:
-> Cut text to a maximum number of characters.
+1. #### def text_to_speech(text: str, destination: str) -> None:
+   Converts _text_ to speech using OpenAI's **TTS-1** audio generation model, and saves the resulting audio as an mp3 file in _destination_.
 
-#### def text_to_speech(text: str, destination: str) -> None:
-> Convert text to speech using OpenAI's library.
+1. #### def play_mp3(file_path):
+   Plays mp3 file located in *file_path*. Used to play audio summary of video. 
 
-#### def generate_image(text: str, response_format: Literal['url', 'b64_json']) -> str | None:
-> Generate an image from text using OpenAI's API.
+1. #### def save_text_to_file(text: str, destination: str) -> None:
+   Saves _text_ to file in _destination_ path. Use to save the various text files generated(transcription of original audio, English translation and summary). 
 
-#### def save_image_from_URL(url: str, destination: str) -> None:
-> Save an image from a URL.
+1. #### def cut_text(text: str, max_chars: int) -> str:
+   Cuts _text_ to maximum number of characters *max_chars*. It's used to accommodate the current limitation of 4096 characters for the prompt in OpenAI's **Dall-e-3** image generation model.  
 
-#### def save_image_from_b64data(b64_data: str, destination: str) -> None:
-> Save an image from base64 data.
 
-#### def generate_pdf(original_txt: str, english_txt: str, summary_txt: str) -> None:
-> Generate a PDF file.
+1. #### def generate_image(text: str, response_format: Literal['url', 'b64_json']) -> str | None:
+   Generate an image from text using OpenAI's **Dall-e-3** model. 
+   > **Design choices:** The Dall-e-3 model offers two options for the format of the response. The easiest to implement is the URL format, where the model returns a URL that can be used to access  the generated image. The downside of this option is that it requires an additional HTTP request to save the image. The alternative is to receive the image directly from the model using base64 encoding. We selected the second alternative despite its complexity because of its efficiency. This, however, required significant research since it was not well documented by OpenAI. The use of this option involved at the end the use of three additional libraries: pillow, io and base64.  
+
+1. #### def save_image_from_URL(url: str, destination: str) -> None:
+   Executes an HTTP request to access an image located at _url_. It then downloads the image to _destination_. This allows to download images generated by the **Dall-e-3** model when using the "url" response format. However, as explained in Design Choices above, we don't use that option for now. 
+
+1. #### def save_image_from_b64data(b64_data: str, destination: str) -> None:
+   Save an image from base64 data. Uses libraries base64, pillow and IO
+
+### Generative AI models used
+  * **Whisper-1**: Speech-to-text
+  * **GPT 3.5 Turbo**: Chat, text-generation, summarization
+  * **TTS-1**: Text-to-speech
+  * **Dall-e-3**: Image generation
 
 ### Libraries used
 
-* openai: Used to access Open AI generative AI models for:
-  * Text generation (Chat)
-  * Text-to-speech
-  * Speech-to-text
-  * Image generation
-* pytube: Used to find and download youtube videos. 
-* python-dotenv: used to securely store openai API keys. 
-* os: used to retrieve secret keys from environmental variables and generate filename and paths for new files. 
-* mypy: Used as type checker
-* typing: used in providing type information to mypy
-* pydub: Used to determine length of audio files and cut them to a manageable size if the original is too long. 
-* requests: Used to download image files generated by Open AI from a url. 
-* pillow: Used to download image files generated by Open AI from base64 json data. 
-* io: used to process base64 encoded image data. 
-* pytest: Used to test functions
-* pygame: Used to play mp3 sound files. 
-* time: Used to wait (using sleep function) while an mp3 sound file is being played. 
+* **pytube**: Used to find and download youtube videos. 
+* **openai**: Used to access Open AI generative AI models.
+* **python-dotenv**: used to securely store openai API keys. 
+* **os**: used to retrieve secret keys from environmental variables and generate filename and paths for new files. 
+* **mypy**: Used as type checker
+* **typing**: used in providing type information to mypy
+* **pydub**: Used to determine length of audio files and cut them to a manageable size if the original is too long. 
+* **requests**: Used to download image files generated by Open AI from a url. 
+* **base64**: Used to decode base64-encoded image data.
+* **io**: used to process base64 encoded image data. 
+* **pillow**: Used to download images generated by Open AI. 
+* **pytest**: Used to test functions
+* **pygame**: Used to play mp3 sound files. 
+* **time**: Used to wait (using sleep function) while an mp3 sound file is being played. 
 
-
-
-
-Spotify Plus is a Flask-based web application designed to enhance the Spotify user experience by displaying additional insights about specific tracks and artists. These insights are generated using Open AI's GPT 3.5 Turbo large language model. The app seamlessly interacts with Spotify playlists and devices, and the Open AI model, via real-time API calls. 
-
-To optimize performance and minimize costs associated with OpenAI API usage, Spotify Plus utilizes a SQLite database to store and reuse insights generated by GPT. This caching mechanism ensures that repeated queries for the same song or artist are efficient and cost-effective.
-
-The app is written as a single python file (**app.py**) that uses several packages (e.g. Flask, SQLite3, requests, Open AI).
-
-### Functionality:
-
-#### 1) User authentication
-Upon launching Spotify Plus, users are prompted to log in with their Spotify credentials (**index.html**). This initiates the OAuth 2.0 authorization process needed to access Spotify user data. If the user hasn't been authorized before, the app guides the user through a Spotify-hosted screen where the user can grant view/read-only access to the data used by Spotify Plus (i.e. playlists, account data and content being played).
-
-The authorization process generates an access token and a refresh token. The access token is used in all subsequent Spotify API calls. The refresh token is used to automatically get a new access token if/when the access token expires. These tokens are stored along with user name and user_id as session variables. A logout option in **layout.html** allows the user to delete all the data stored in the session, including the tokens. 
-
-#### 2) Display current track
-
-After taking the user through the Spotify authorization process, the app displays the track currently playing in the Spotify app (if any). The user can click a button to get insights about this track. 
-
-#### 3) Display users' playlists and select track
-
-The app also displays a list of all the playlists in the user account (**index.html**) and allows the user to navigate through this list to select a different track from the one being played (**playlist.html**). The app displays a maximum of 10 playlists or tracks in each screen (page), but includes buttons at the bottom of the screen to navigate accross all pages.  
-
-#### 4) Display insights about track and artists
-
-Once the user selects a particular track (either the track being played in Spotify, or one picked from a playlist), the app displays details about the track and all the artists involved (**track.html** ). The details include an image associated with the tracks' album provided by Spotify, and text insights provided by GPT. 
-
-Insights are generated using Chat Completion APIs provided by Open AI. Two separate API calls are done, one for the track, and one for the artists. The prompt given to GPT varies slightly based on the scenario, but include the system message "You are a music erudite and historian, passionate about all music genres." and the request: "Tell me something interesting about"...
-
-#### 5) Display insights about an artist
-
-In the scenario where multiple artists are involved with a track, the insights provided cover all the artists. The user can narrow this by clicking on one particular artist to go to a different page dedicated to that artist alone (**artist.html**). In this page the app generates new insights about the individual artist via a separate call to GPT's Chat Completion API. 
-
-#### 6) Caching of insights from GPT
-
-When users revisit previously explored tracks or artists, Spotify Plus retrieves insights from a local database (**SpotifyPlus.db**) instead of making real-time API calls. This database is continuously updated whenever new insights are fetched from GPT, optimizing performance and minimizing unnecessary API requests.
-
-The database contains two simple tables, one for tracks and one for artists. 
-
-#### 7) Play track, playlist or artist
-
-Accross all pages, wherever a track, playlist or artist is displayed, the user can click on a button to start playing that track, playlist or artist immediately in  Spotify. Two different "play" buttons are provided, one for the Spotify App and one for Spotify Web. The Spotify Web button launches Spotify in a different tab in the browser. 
-
-#### 8) Look and Feel
-
- The app leverages [Boostrap](https://getbootstrap.com/) for general formatting and navigation (see **layout.html**). Additional CSS definitions are included in **styles.css**
-
-
-### Endpoints
-
-Spotify Plus supports the following endpoints:
-
-- /: Home page
-- /login: Spotify login and authorization
-- /logout: Logout and session data deletion
-- /callback: Callback for Spotify authorization
-- /playlists: Display user playlists
-- /playlists/offset=<int:offset>: Paginated playlists
-- /playlist/<playlist_id>: Display tracks in a playlist
-- /playlist/<playlist_id>/offset=<int:offset>: Paginated tracks in a playlist
-- /track/<track_id>: Display insights for a track and all artists involved
-- /artist/<artist_id>: Display insights for an artist
-- /refresh_token: Refresh Spotify access token
-
-### Technologies and tools used in development
-
-- Python
-- Flask
-- Bootstrap
-- SQLite
-- CSS
-- HTML
-- Git / Github
-- VSCode (with CoPilot enabled).
 
 ### Setup 
 
@@ -187,4 +134,5 @@ To run AI_Media in a local computer, please setup keys to access Open AI APIs.
 
 1. Sign up for an OPEN AI account ([openai.com](https://openai.com/)) if you haven't already and obtain your OPEN AI API key. 
 1. Create a .env file in the application directory and include your Spotify keys:
-   - OPENAI_API_KEY = "your Open AI key here"
+
+   OPENAI_API_KEY = "your Open AI key here"

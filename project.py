@@ -64,9 +64,6 @@ def main():
         translation: OpenAI.Translation = speech_to_English_text(download_full_path)
         english_txt: str = translation.text
         #print(f"Text from audio in English: {english_txt}\n")
-
-        # save text in English to file
-        save_text_to_file(english_txt, os.path.join(media_dir,youtube_id+"_english.txt"))
     else:
         print("No need to translate to English...\n")
         english_txt = original_txt
@@ -74,7 +71,7 @@ def main():
     # summarize text using Open AI GPT-3.5 Turbo model
     print("Summarizing text...\n")
     summary_txt: str = summarize_text(english_txt)
-    print("Summary: ", summary_txt, "\n")
+    print(summary_txt, "\n")
 
     if not args.no_audio:
         # narrate the summary
@@ -95,7 +92,7 @@ def main():
 
         # save text in original language to file
         if original_language != "english":
-            file = os.path.join(media_dir,youtube_id+f"_{original_language.title}.txt")
+            file = os.path.join(media_dir,youtube_id+f"_{original_language.title()}.txt")
             print(f"Saving original text to {file}...\n")
             save_text_to_file(original_txt, file)
 
@@ -104,7 +101,7 @@ def main():
         print(f"Saving summary text to {file}...\n")
         save_text_to_file(summary_txt, file)
 
-    # cuts summary text size to 4906 characters if needed (OpenAI limit for image generation) 
+    # cuts summary text size to 4906 characters if needed (OpenAI limit for image generation with dall-e-3 model) 
     MAX_OPENAI_CHARS = 4096
     summary_txt_for_image = cut_text(summary_txt, MAX_OPENAI_CHARS)
     
@@ -150,7 +147,7 @@ def get_video(url: str) -> pytube.YouTube:
     return ytObject
 
 def save_smallest_audio_stream(ytObject: pytube.YouTube, media_dir: str, filename: str) -> str:
-    """Get the smaller audio stream of a youtube video."""
+    """Finds and download the smallest audio stream available for a youtube video."""
     filtered_streams = ytObject.streams.filter(
         file_extension="mp4", only_audio=True
     ).order_by("abr")
@@ -209,14 +206,6 @@ def speech_to_English_text(filename: str):
     return translation
 
 
-def save_text_to_file(text: str, destination: str) -> None:
-    """Save text to a file."""
-    if text == "" or destination == "":
-        raise ValueError("Text and destination cannot be empty")
-    with open(destination, "w") as text_file:
-        text_file.write(text)
-
-
 def summarize_text(english_txt: str) -> str | None:
     """Summarize text using OpenAI's library."""
     if english_txt == "":
@@ -235,13 +224,6 @@ def summarize_text(english_txt: str) -> str | None:
     )
     return completion.choices[0].message.content
 
-def cut_text(text: str, max_chars: int) -> str:
-    """Cut text to a maximum number of characters."""
-    if len(text) > max_chars:
-        print(f"Text is too long. Cutting to {max_chars} characters...\n")
-        return text[:max_chars]
-    return text
-
 def text_to_speech(text: str, destination: str) -> None:
     """Convert text to speech using OpenAI's library."""
     if text == "" or destination == "":
@@ -250,10 +232,26 @@ def text_to_speech(text: str, destination: str) -> None:
     response = client.audio.speech.create(model="tts-1", voice="alloy", input=text)
     response.stream_to_file(destination)
 
-def play_mp3(file_path):
+def play_mp3(file_path) -> None:
     pygame.mixer.init()
     pygame.mixer.music.load(file_path)
     pygame.mixer.music.play()
+
+def save_text_to_file(text: str, destination: str) -> None:
+    """Save text to a file."""
+    if text == "" or destination == "":
+        raise ValueError("Text and destination cannot be empty")
+    with open(destination, "w") as text_file:
+        text_file.write(text)
+
+
+def cut_text(text: str, max_chars: int) -> str:
+    """Cut text to a maximum number of characters."""
+    if len(text) > max_chars:
+        print(f"Text is too long. Cutting to {max_chars} characters...\n")
+        return text[:max_chars]
+    return text
+
 
 def generate_image(text: str, response_format: Literal['url', 'b64_json']) -> str | None:
     """Generate an image from text using OpenAI's API."""
@@ -295,20 +293,6 @@ def save_image_from_b64data(b64_data: str, destination: str) -> None:
     image_data = base64.b64decode(b64_data)
     with Image.open(BytesIO(image_data)) as img:
         img.save(destination)
-
-def generate_pdf(original_txt: str, english_txt: str, summary_txt: str) -> None:
-    """Generate a PDF file."""
-    pdf = FPDF(orientation="P", unit="mm", format="letter")
-    pdf.add_page()
-    pdf.set_auto_page_break(True)
-    pdf.set_font("helvetica", "B", 12)
-    pdf.cell(0, 0, "Summary: "+summary_txt+"\n"+"English text: "+english_txt)
-    pdf.ln(20)
-    # pdf.image("shirtificate.png",Align.C)
-    # pdf.set_font("helvetica","",28)
-    # pdf.set_text_color(255,255,255)
-    # pdf.cell(0,-300,name+" took CS50",align=Align.C)
-    pdf.output("shirtificate.pdf")
 
 if __name__ == "__main__":
     main()
