@@ -1,15 +1,7 @@
-openai
 pytube
+openai
 python-dotenv
-os
 pydub
 requests
-base64
 pillow
-io
-typing
 pygame
-mypy
-time
-pytest
-argparse

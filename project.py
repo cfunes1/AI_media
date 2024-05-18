@@ -41,10 +41,12 @@ def main():
     if not os.path.isdir(media_dir):
         os.mkdir(media_dir)
     youtube_id = ytObject.video_id
+    output_count = 1
 
     # find smaller audio stream for the video specified
     print(f"Finding and saving smallest audio stream available for video: '{ytObject.title}'...\n")
-    download_full_path = save_smallest_audio_stream(ytObject=ytObject,media_dir=media_dir, filename=youtube_id + "_Audio.mp4")
+    download_full_path = save_smallest_audio_stream(ytObject=ytObject,media_dir=media_dir, filename=youtube_id + "_"+str(output_count)+"_Audio.mp3")
+    output_count += 1
 
     # cuts file size to 10 mins if it is too long
     if cut_file(download_full_path=download_full_path, max_duration_secs=int(10 * 60)):
@@ -68,38 +70,45 @@ def main():
         print("No need to translate to English...\n")
         english_txt = original_txt
 
+    if not args.no_text:
+        # save text in original language to file
+        if original_language != "english":
+            file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+f"_{original_language.title()}.txt")
+            output_count += 1
+            print(f"Saving original text to {file}...\n")
+            save_text_to_file(original_txt, file)
+
+        # save English text to file
+        file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_English.txt")
+        output_count += 1
+        print(f"Saving English text to {file}...\n")
+        save_text_to_file(english_txt, file)
+
     # summarize text using Open AI GPT-3.5 Turbo model
     print("Summarizing text...\n")
     summary_txt: str = summarize_text(english_txt)
-    print(summary_txt, "\n")
+    if not args.no_text:
+        # save Summary to file
+        file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Summary.txt")
+        output_count += 1
+        print(f"Saving summary text to {file}...\n")
+        save_text_to_file(summary_txt, file)
 
     if not args.no_audio:
         # narrate the summary
         print("Recording narration of summary...\n")
-        text_to_speech(summary_txt, os.path.join(media_dir,youtube_id+"_Summary.mp3"))
+        file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Summary.mp3")
+        text_to_speech(summary_txt, file)
+        output_count += 1
 
-        if not args.no_play:
-            # starts playing the summary
-            print("Summary: ", summary_txt, "\n")
-            print("Playing recording of summary...\n")
-            play_mp3(os.path.join(media_dir,youtube_id+"_Summary.mp3"))
+    #print summary
+    print(summary_txt, "\n")
+
+    if not args.no_audio and not args.no_play:
+        # starts playing the summary
+        print("Playing recording of summary...\n")
+        play_mp3(file)
     
-    # save English text to file
-    if not args.no_text:
-        file = os.path.join(media_dir,youtube_id+"_English.txt")
-        print(f"Saving english text to {file}...\n")
-        save_text_to_file(english_txt, file)
-
-        # save text in original language to file
-        if original_language != "english":
-            file = os.path.join(media_dir,youtube_id+f"_{original_language.title()}.txt")
-            print(f"Saving original text to {file}...\n")
-            save_text_to_file(original_txt, file)
-
-        # save Summary to file
-        file = os.path.join(media_dir,youtube_id+"_Summary.txt")
-        print(f"Saving summary text to {file}...\n")
-        save_text_to_file(summary_txt, file)
 
     # cuts summary text size to 4906 characters if needed (OpenAI limit for image generation with dall-e-3 model) 
     MAX_OPENAI_CHARS = 4096
@@ -117,12 +126,9 @@ def main():
     if not args.no_image:
         print("Generating image based on summarized text...\n")
         image_data = generate_image(summary_txt_for_image, "b64_json")
-        image_destination = os.path.join(media_dir,youtube_id+"_Image.png")
-        print(f"Saving image at: {image_destination}...\n ")
-        save_image_from_b64data(image_data, image_destination)
-
-    # generate pdf
-    #generate_pdf(original_txt, english_txt, summary_txt)
+        file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Image.png")
+        print(f"Saving image at: {file}...\n ")
+        save_image_from_b64data(image_data, file)
 
     # finishes playing mp3 summary
     if not args.no_audio and not args.no_play:

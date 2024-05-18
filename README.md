@@ -3,17 +3,24 @@
 ## Description: 
 In today's world, YouTube offers boundless learning opportunities, but time remains a precious resource. AI_Media is a Python tool and library designed to help users consume YouTube content more efficiently.
 
-AI_Media leverages advanced generative AI models from OpenAI and several Python libraries to compile and summarize YouTube video content into various media formats: text, audio, and images. These summary documents allow users to quickly grasp the essence of a video in their preferred format, helping them decide whether it's worth watching the full video. AI_Media empowers users to make the most of their time by delivering concise, multi-format overviews of YouTube content.
+AI_Media leverages advanced generative AI models from OpenAI and several Python libraries to summarize YouTube video content into various media formats: text, audio, and images. These summary documents allow users to quickly grasp the essence of a video in their preferred media format, helping them decide whether it's worth watching the full video in its original form. AI_Media empowers users to make the most of their time by delivering concise, multi-format overviews of YouTube content regardless of the language used in the videos.
 
 ## Functionality
+
 For any YouTube video the user selects, AI_media generates the following artifacts (prefixed by the YouTube video ID) :
 
-1. **Audio.mp4**: Sound of original video, cut to 10 mins if mlonger, as an MP4 file. 
-1. **[original language].txt**: AI-generated transcription from audio in the original language as a text file. Only available if original language is not English.
+1. **Audio.mp4**: Sound of original video, cut to 10 mins if longer, as an MP3 file. 
+1. **[original language].txt**: AI-generated transcription from audio in its original language as a text file (generated only if original language is not English).
 1. **English.txt**: AI-generated transcription from audio in English as a text file. 
 1. **Summary.txt**: AI-generated summary of the English trascription as a text file. 
 1. **Summary.mp3**: AI-generated sound narration of the English summary as an MP3 file. 
-1. **Image.png**: AI-generated picture conveying the ideas of the English summary as a PNG image.
+1. **Image.png**: AI-generated picture inspired by the English summary as a PNG image.
+
+### Language support
+
+AI_Media can translate videos in dozens of languages to English before summarizing them. This is accomplished by leveraging OpenAI's Whisper model which was trained in 98 languages. 
+
+Langages officially supported by the Whisper AI model include: Afrikaans, Arabic, Armenian, Azerbaijani, Belarusian, Bosnian, Bulgarian, Catalan, Chinese, Croatian, Czech, Danish, Dutch, English, Estonian, Finnish, French, Galician, German, Greek, Hebrew, Hindi, Hungarian, Icelandic, Indonesian, Italian, Japanese, Kannada, Kazakh, Korean, Latvian, Lithuanian, Macedonian, Malay, Marathi, Maori, Nepali, Norwegian, Persian, Polish, Portuguese, Romanian, Russian, Serbian, Slovak, Slovenian, Spanish, Swahili, Swedish, Tagalog, Tamil, Thai, Turkish, Ukrainian, Urdu, Vietnamese, and Welsh. (source: https://platform.openai.com/docs/guides/speech-to-text/supported-languages)
 
 ### Arguments
 ```
@@ -31,20 +38,6 @@ options:
   -na, --no-audio  Do not generate audio files
   -ni, --no-image  Do not generate image files
 ```
-
-### Files
-
-- **.gitignore**: Specifies files to be ignored by source control, such as the .env file containing OpenAI API security keys.
-
-- **project.py**: Contains the _main()_ function and all other functions called in _main()_. It can be used as a module to access the different tools. 
-
-- **README.md**: This documentation file
-
-- **requirements.txt**: A list of the project's library dependencies.
-
-- **test_project**: Contains tests for **project.py** to be used with pytest.
-
-- **.env**: Contains OpenAI security keys (not included in source control). 
 
 ### Functions
 
@@ -104,34 +97,66 @@ AI_Media tools are implemented as functions accessible via command-line argument
 1. #### def save_image_from_b64data(b64_data: str, destination: str) -> None:
    Saves an image from base64 data using the base64, pillow and IO libraries. 
 
+### Files
+
+- **project.py**: Contains the _main()_ function and all other functions called in _main()_. It can be used as a module to access the different tools. 
+
+- **test_project**: Contains tests for **project.py** to be used with pytest.
+
+- **README.md**: This documentation file
+
+- **requirements.txt**: A list of the project's library dependencies.
+
+- **.gitignore**: Specifies files to be ignored by source control, such as the .env file containing OpenAI API security keys.
+
+- **.env**: Contains OpenAI security keys (not included in source control). 
+
 ### Generative AI models used
   * **Whisper-1**: Speech-to-text
   * **GPT 3.5 Turbo**: Chat, text-generation, summarization
   * **TTS-1**: Text-to-speech
   * **Dall-e-3**: Image generation
 
+### Modules from standard library used
+
+* **os**: For retrieving secret keys and generating filenames and paths. 
+* **base64**: For decoding base64-encoded image data. 
+* **io**: For processing base64-encoded image data. 
+* **typing**: For type hints. 
+* **argparse**: For argument parsing.
+* **time**: For using the sleep function while playing audio files. 
+
 ### Libraries used
 
 * **pytube**: For finding and downloading YouTube videos. 
 * **openai**: For Accessing Open AI generative AI models.
 * **python-dotenv**: For securely storing OpenAI API keys. 
-* **os**: For retrieving secret keys and generating filenames and paths. 
-* **mypy**: For type checking.
-* **typing**: For type hints. 
 * **pydub**: For audio file length determination and cutting. 
 * **requests**: For downloading image files. 
-* **base64**: For decoding base64-encoded image data. 
-* **io**: For processing base64-encoded image data. 
 * **pillow**: For downloading images. 
-* **pytest**: For testing functions.
 * **pygame**: For playing MP3 sound files. 
-* **time**: For using the sleep function while playing audio files. 
+
+### Other tools used
+
+* **ffmpeg**: For managing various multimedia files (pydub requirement).
+* **mypy**: For type checking.
+* **pytest**: For testing functions.
 
 ### Setup 
 
-To run AI_Media in a local computer, please setup keys to access OpenAI APIs.
+#### Installing FFMPEG
 
-1. Sign up for an OPEN AI account ([openai.com](https://openai.com/)) and obtain your your OPEN AI API key. 
-1. Create a .env file in the application directory and include your OpenAI API key:
+      To install in Ubuntu:
+         - sudo apt update && sudo apt upgrade
+         - sudo apt install ffmpeg
+         
+      To validate installation:
+         - ffmpeg -version
 
-   >OPENAI_API_KEY = "your Open AI key here"
+#### Setting up OpenAI keys
+
+
+   1. Sign up for an OPEN AI account ([openai.com](https://openai.com/)) and obtain your your OPEN AI API key. 
+   1. Create a .env file in the application directory and include your OpenAI API key:
+
+      > OPENAI_API_KEY = "your Open AI key here"
