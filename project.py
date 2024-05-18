@@ -18,12 +18,14 @@ CLIENT_ID = os.getenv("CLIENT_ID")
 CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
 def main():
-    parser = argparse.ArgumentParser(description="Analize and summarize a youtube video")
+    parser = argparse.ArgumentParser(description=f"Analize and summarize a youtube video into various media formats: text, audio, and images.")
+
     parser.add_argument("url",default="", help="URL of youtube video to summarize", type=str)
-    parser.add_argument("-np","--no-play", help="Do not play the audio summary", action="store_true")
-    parser.add_argument("-nt","--no-text", help="Do not generate text files", action="store_true")
-    parser.add_argument("-na","--no-audio", help="Do not generate audio  files", action="store_true")
-    parser.add_argument("-ni","--no-image", help="Do not generate image  files", action="store_true")
+    parser.add_argument("-ap","--auto_play", help="Start playing audio summary automatically", action="store_true")
+    parser.add_argument("-ad","--auto_display", help="Display English summary in terminal automatically", action="store_true")
+    parser.add_argument("-nt","--no_text", help="Do not generate text files", action="store_true")
+    parser.add_argument("-na","--no_audio", help="Do not generate audio  files", action="store_true")
+    parser.add_argument("-ni","--no_image", help="Do not generate image  files", action="store_true")
     args = parser.parse_args()
     url = args.url
     # url = "https://www.youtube.com/watch?v=WbzNRTTrX0g"
@@ -58,14 +60,13 @@ def main():
     original_txt: str = transcription.text
     original_language: str = transcription.language
     #print(f"Text from audio in original language: {original_txt}\n")
-    print(f"Language of audio: {original_language}\n")
+    print(f"Language of audio: {str(original_language).title}\n")
 
     # transcribe file to English using OpenAI Whisper model
     if original_language != "english":
         print("Translating audio to English...\n")
         translation: OpenAI.Translation = speech_to_English_text(download_full_path)
         english_txt: str = translation.text
-        #print(f"Text from audio in English: {english_txt}\n")
     else:
         print("No need to translate to English...\n")
         english_txt = original_txt
@@ -75,13 +76,13 @@ def main():
         if original_language != "english":
             file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+f"_{original_language.title()}.txt")
             output_count += 1
-            print(f"Saving original text to {file}...\n")
+            print(f"-->Saving original text to {file}...\n")
             save_text_to_file(original_txt, file)
 
         # save English text to file
         file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_English.txt")
         output_count += 1
-        print(f"Saving English text to {file}...\n")
+        print(f"-->Saving English text to {file}...\n")
         save_text_to_file(english_txt, file)
 
     # summarize text using Open AI GPT-3.5 Turbo model
@@ -91,20 +92,21 @@ def main():
         # save Summary to file
         file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Summary.txt")
         output_count += 1
-        print(f"Saving summary text to {file}...\n")
+        print(f"-->Saving summary text to {file}...\n")
         save_text_to_file(summary_txt, file)
 
     if not args.no_audio:
         # narrate the summary
-        print("Recording narration of summary...\n")
         file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Summary.mp3")
+        print(f"-->Recording narration of summary to {file}...\n")
         text_to_speech(summary_txt, file)
         output_count += 1
 
-    #print summary
-    print(summary_txt, "\n")
+    if args.auto_display:
+        #print summary
+        print(summary_txt, "\n")
 
-    if not args.no_audio and not args.no_play:
+    if not args.no_audio and args.auto_play:
         # starts playing the summary
         print("Playing recording of summary...\n")
         play_mp3(file)
@@ -124,14 +126,14 @@ def main():
 
     # generate image based on summarized text
     if not args.no_image:
-        print("Generating image based on summarized text...\n")
+        print(f"Generating image based on summarized text...\n")
         image_data = generate_image(summary_txt_for_image, "b64_json")
         file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Image.png")
-        print(f"Saving image at: {file}...\n ")
+        print(f"-->Saving image at: {file}...\n ")
         save_image_from_b64data(image_data, file)
 
     # finishes playing mp3 summary
-    if not args.no_audio and not args.no_play:
+    if not args.no_audio and args.auto_play:
         if pygame.mixer.music.get_busy():
             print("Waiting for mp3 to finish playing... hit ^C to stop")
             while pygame.mixer.music.get_busy():
@@ -172,7 +174,7 @@ def on_progress(stream, chunk, bytes_remaining) -> None:
 
 def on_complete(stream, file_path) -> None:
     """Notifies of download completion."""
-    print("File fully downloaded at: ", file_path, "\n")
+    print("-->File fully downloaded at: ", file_path, "\n")
 
 
 def cut_file(download_full_path: str, max_duration_secs: int) -> bool:

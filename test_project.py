@@ -19,11 +19,11 @@ def test_get_video():
 def test_save_smallest_audio_stream():
     #file correctly saved
     ytObject = project.get_video("https://www.youtube.com/watch?v=fN-_j1yOXCE")
-    assert project.save_smallest_audio_stream(ytObject,"./media","fN-_j1yOXCE.mp4").endswith("fN-_j1yOXCE.mp4")
+    assert project.save_smallest_audio_stream(ytObject,"./media","fN-_j1yOXCE.mp3").endswith("fN-_j1yOXCE.mp3")
 
 def test_cut_file():
     ytObject = project.get_video("https://www.youtube.com/watch?v=WbzNRTTrX0g")
-    download_full_path = project.save_smallest_audio_stream(ytObject,"./media","WbzNRTTrX0g.mp4")
+    download_full_path = project.save_smallest_audio_stream(ytObject,"./media","WbzNRTTrX0g.mp3")
     assert project.cut_file(download_full_path, 10 * 60) == True
     assert project.cut_file(download_full_path, 10 * 60) == False
 
@@ -31,13 +31,13 @@ def test_cut_file():
 def test_speech_to_text():
     
     ytObject = project.get_video("https://www.youtube.com/watch?v=fN-_j1yOXCE")
-    download_full_path = project.save_smallest_audio_stream(ytObject,"./media","fN-_j1yOXCE.mp4")
+    download_full_path = project.save_smallest_audio_stream(ytObject,"./media","fN-_j1yOXCE.mp3")
     transcription = project.speech_to_text(download_full_path)
     assert transcription.text.lower().strip().startswith("when i was a teenager") 
     assert transcription.language == "english"
 
     ytObject = project.get_video("https://www.youtube.com/watch?v=TV7Dj8lch4k")
-    download_full_path = project.save_smallest_audio_stream(ytObject,",/media","TV7Dj8lch4k.mp4")
+    download_full_path = project.save_smallest_audio_stream(ytObject,"./media","TV7Dj8lch4k.mp3")
 
     transcription = project.speech_to_text(download_full_path)
     assert transcription.text.lower().strip().startswith("sale el sol")
