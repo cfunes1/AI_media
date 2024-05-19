@@ -31,7 +31,7 @@ def main():
     # url = "https://www.youtube.com/watch?v=WbzNRTTrX0g"
     # url = "https://www.youtube.com/watch?v=TV7Dj8lch4k"
     # url = "https://www.youtube.com/watch?v=dtxEigxsy5s"
-    print(f"Looking for video at {url}...\n")
+    print(f"Looking for video at {url}...")
     # find video
     try:
         ytObject: pytube.YouTube = get_video(url)
@@ -46,7 +46,7 @@ def main():
     output_count = 1
 
     # find smaller audio stream for the video specified
-    print(f"Finding and saving smallest audio stream available for video: '{ytObject.title}'...\n")
+    print(f"Finding and saving smallest audio stream available for video: '{ytObject.title}'...")
     download_full_path = save_smallest_audio_stream(ytObject=ytObject,media_dir=media_dir, filename=youtube_id + "_"+str(output_count)+"_Audio.mp3")
     output_count += 1
 
@@ -55,20 +55,20 @@ def main():
         print("File cut to 10 mins")
 
     # transcribe file to original language using OpenAI Whisper model
-    print("Transcribing audio in original language...\n")
+    print("Transcribing audio in original language...")
     transcription: OpenAI.Transcription = speech_to_text(download_full_path)
     original_txt: str = transcription.text
     original_language: str = transcription.language
-    #print(f"Text from audio in original language: {original_txt}\n")
-    print(f"Language of audio: {str(original_language).title}\n")
+    #print(f"Text from audio in original language: {original_txt}")
+    print(f"Language of audio: {str(original_language).title}")
 
     # transcribe file to English using OpenAI Whisper model
     if original_language != "english":
-        print("Translating audio to English...\n")
+        print("Translating audio to English...")
         translation: OpenAI.Translation = speech_to_English_text(download_full_path)
         english_txt: str = translation.text
     else:
-        print("No need to translate to English...\n")
+        print("No need to translate to English...")
         english_txt = original_txt
 
     if not args.no_text:
@@ -76,29 +76,29 @@ def main():
         if original_language != "english":
             file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+f"_{original_language.title()}.txt")
             output_count += 1
-            print(f"-->Saving original text to {file}...\n")
+            print(f"Saving original text to {file}...")
             save_text_to_file(original_txt, file)
 
         # save English text to file
         file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_English.txt")
         output_count += 1
-        print(f"-->Saving English text to {file}...\n")
+        print(f"Saving English text to {file}...")
         save_text_to_file(english_txt, file)
 
     # summarize text using Open AI GPT-3.5 Turbo model
-    print("Summarizing text...\n")
+    print("Summarizing text...")
     summary_txt: str = summarize_text(english_txt)
     if not args.no_text:
         # save Summary to file
         file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Summary.txt")
         output_count += 1
-        print(f"-->Saving summary text to {file}...\n")
+        print(f"Saving summary text to {file}...")
         save_text_to_file(summary_txt, file)
 
     if not args.no_audio:
         # narrate the summary
         file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Summary.mp3")
-        print(f"-->Recording narration of summary to {file}...\n")
+        print(f"Recording narration of summary to {file}...")
         text_to_speech(summary_txt, file)
         output_count += 1
 
@@ -108,7 +108,7 @@ def main():
 
     if not args.no_audio and args.auto_play:
         # starts playing the summary
-        print("Playing recording of summary...\n")
+        print("Playing recording of summary...")
         play_mp3(file)
     
 
@@ -117,19 +117,19 @@ def main():
     summary_txt_for_image = cut_text(summary_txt, MAX_OPENAI_CHARS)
     
     # generate image based on summarized text
-    #print("Generating image based on summarized text...\n")
+    #print("Generating image based on summarized text...")
     #image_URL = generate_image(summary_txt_for_image, "url")
     #image_destination = os.path.join(media_dir,youtube_id+".png")
-    #print("Image generated: ", image_URL, "\n")
-    #print(f"Saving image at: {image_destination}...\n ")
+    #print("Image generated: ", image_URL, "")
+    #print(f"Saving image at: {image_destination}... ")
     #save_image_from_URL(image_URL, image_destination)
 
     # generate image based on summarized text
     if not args.no_image:
-        print(f"Generating image based on summarized text...\n")
+        print(f"Generating image based on summarized text...")
         image_data = generate_image(summary_txt_for_image, "b64_json")
         file = os.path.join(media_dir,youtube_id+ "_"+str(output_count)+"_Image.png")
-        print(f"-->Saving image at: {file}...\n ")
+        print(f"Saving image at: {file}... ")
         save_image_from_b64data(image_data, file)
 
     # finishes playing mp3 summary
@@ -174,7 +174,7 @@ def on_progress(stream, chunk, bytes_remaining) -> None:
 
 def on_complete(stream, file_path) -> None:
     """Notifies of download completion."""
-    print("-->File fully downloaded at: ", file_path, "\n")
+    print("File fully downloaded at: ", file_path, "")
 
 
 def cut_file(download_full_path: str, max_duration_secs: int) -> bool:
@@ -182,11 +182,11 @@ def cut_file(download_full_path: str, max_duration_secs: int) -> bool:
     current_duration_secs: float = float(mediainfo(download_full_path)["duration"])
     needs_cut = int(current_duration_secs) > max_duration_secs
     if needs_cut:
-        print(f"File is too long ({current_duration_secs} secs). Cutting it to the first 10 mins...\n")
+        print(f"File is too long ({current_duration_secs} secs). Cutting it to the first 10 mins...")
         try:
             print("Loading file...")
             audio: AudioSegment = AudioSegment.from_file(download_full_path)
-            print("Cutting file...\n")
+            print("Cutting file...")
             cut_file: AudioSegment = audio[: max_duration_secs * 1000]  # duration in miliseconds
             cut_file.export(download_full_path)
         except FileNotFoundError:
@@ -256,7 +256,7 @@ def save_text_to_file(text: str, destination: str) -> None:
 def cut_text(text: str, max_chars: int) -> str:
     """Cut text to a maximum number of characters."""
     if len(text) > max_chars:
-        print(f"Text is too long. Cutting to {max_chars} characters...\n")
+        print(f"Text is too long. Cutting to {max_chars} characters...")
         return text[:max_chars]
     return text
 
