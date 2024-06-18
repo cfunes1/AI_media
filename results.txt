@@ -1,0 +1,11 @@
+faster whisper translation with original language not specified running on cuda - Time taken by STT: 23.157809257507324 seconds
+faster whisper translation with original language specified running on cuda - Time taken by STT: 22.338404655456543 seconds
+faster whisper transcription with original language not specified running on cuda - Time taken by STT: 22.09998393058777 seconds
+faster whisper transcription with original language specified running on cuda - Time taken by STT: 22.944836616516113 seconds
+original whisper translation with original language not specified running on cuda - Time taken by STT: 22.63980722427368 seconds
+original whisper translation with original language specified running on cuda - Time taken by STT: 21.868407726287842 seconds
+original whisper transcription with original language not specified running on cuda - Time taken by STT: 22.70745587348938 seconds
+original whisper transcription with original language specified running on cuda - Time taken by STT: 21.93937110900879 seconds
+remote translation - Time taken by STT: 33.58389854431152 seconds
+remote transcription with original language provided - Time taken by STT: 30.863518953323364 seconds
+original whisper transcription with original language specified running on cuda - Time taken by STT: 144.28541207313538 seconds
