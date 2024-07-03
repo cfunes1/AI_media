@@ -6,3 +6,5 @@ requests
 pillow
 pygame
 ollama
+sounddevice
+soundfile

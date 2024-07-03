@@ -8,6 +8,12 @@
 *.so
 *.dylib
 
+# Ignore media files
+*.wav
+*.mp3
+*.mp4
+*.webm
+
 # Ignore build output directories
 /bin/
 /build/

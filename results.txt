@@ -9,3 +9,5 @@ original whisper transcription with original language specified running on cuda 
 remote translation - Time taken by STT: 33.58389854431152 seconds
 remote transcription with original language provided - Time taken by STT: 30.863518953323364 seconds
 original whisper transcription with original language specified running on cuda - Time taken by STT: 144.28541207313538 seconds
+original whisper transcription with original language specified running on cuda - Time taken by STT: 7057.102186203003 seconds
+remote transcription with original language provided - Time taken by STT: 225.84824895858765 seconds

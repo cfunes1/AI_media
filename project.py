@@ -16,11 +16,12 @@ import whisper
 from faster_whisper import WhisperModel
 import torch
 import time
+import subprocess
 from youtube_transcript_api import YouTubeTranscriptApi
 
 load_dotenv()
-CLIENT_ID = os.getenv("CLIENT_ID")
-CLIENT_SECRET = os.getenv("CLIENT_SECRET")
+# CLIENT_ID = os.getenv("CLIENT_ID")
+# CLIENT_SECRET = os.getenv("CLIENT_SECRET")
 
 
 def main():
@@ -207,6 +208,7 @@ def get_video(url: str) -> pytube.YouTube:
     except:
         raise FileNotFoundError("Video not found.")
     return ytObject
+from yt_dlp import YoutubeDL
 
 
 def save_smallest_audio_stream(
@@ -219,6 +221,12 @@ def save_smallest_audio_stream(
     audio_stream = filtered_streams.first()
     download_full_path = audio_stream.download(output_path=media_dir, filename=filename)
     return download_full_path
+
+
+def download_video(url: str):
+    """Download a video from a URL using the best video and audio streams and merges them."""
+    with YoutubeDL() as ydl:
+        ydl.download(URLS)
 
 
 def on_progress(stream, chunk, bytes_remaining) -> None:
@@ -292,7 +300,7 @@ def STT(filename: str, orig_lang = None, run_local: bool = False, faster_whisper
                 task = "transcribe"
             
             print(f"Running original whisper model locally with task {task}, language {orig_lang}")
-            model = whisper.load_model("base", device=device)
+            model = whisper.load_model(model_size, device=device)
             
             text = model.transcribe(filename, language = orig_lang, verbose = True, task = task)["text"]
             
@@ -458,10 +466,40 @@ def time_function(func, desc, *args, **kwargs):
 
 def yt_transcript(url: str) -> list:
     # get the video id
-    video_id = url.split("v=")[1]
+    try:
+        video_id = url.split("v=")[1]
+    except IndexError:
+        raise FileNotFoundError("Video not found or not compatible format.")
     # get the transcript
     transcript = YouTubeTranscriptApi.get_transcript(video_id)
-    return transcript
+
+    text = ""
+    for sentence in transcript:
+        text += f"{sentence["start"]:10.1f}: {sentence["text"]}\n"
+        
+    with open("transcript_"+ video_id +".txt","w") as f:
+        f.write(text)
+    return text
+
+
+
+def downsample(input_file, output_file, sample_rate=16000, bit_rate='32k'):
+    '''Downsamples an audio file to 16 kHz mono with a bit rate of 32 kbps.
+        -i input_file: Specifies the input file.
+        -ar 16000: Sets the audio sample rate to 16 kHz.
+        -ac 1: Converts the audio to mono (1 channel).
+        -b:a 32k: Sets the audio bit rate to 32 kbps.
+        output_file: Specifies the output file.
+    '''
+    command = [
+        'ffmpeg', '-i', input_file,
+        '-ar', str(sample_rate),
+        '-ac', '1',
+        '-b:a', bit_rate,
+        output_file
+    ]
+    subprocess.run(command, check=True)
+
 
 
 if __name__ == "__main__":

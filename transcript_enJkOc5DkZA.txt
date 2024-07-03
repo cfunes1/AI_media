@@ -1,0 +1,534 @@
+0.12: today I just want to take you to my
+1.64: first impression of using claw 3.5
+3.719: sonnet so basically I thought we just
+5.44: try to code a game uh in react with uh
+8.519: 3.5 so this means that we can kind of
+11.16: testt out this artifacts feature too uh
+14.04: I kind of want to create a kind of an
+15.759: interactive game and I want to add
+17.68: Sprites from mid journey I want to add
+19.72: in some music from sunno maybe udio add
+22.76: some sound effects from 11 labs and put
+25.8: all of that together only by using 3.5
+28.56: Sonet can I call me Game Dev after that
+31.519: let's see how this works out and at the
+33.6: end I kind of want to do my quick first
+35.68: impressions of working with claw 3.5
+38.0: Sonet let's just get going okay so let
+40.16: me just walk you quickly through kind of
+41.6: my game IDE so basically I want this
+44.2: kind of boxing glove here right so we
+47.28: can just uh yeah do something like this
+49.36: so let's just call it red boxing glove
+52.359: uh I want kind of the ball just to sit
+55.199: on top of the glow right so we have this
+57.8: ball here and yeah we need some kind of
+60.76: box and I kind of want uh
+63.439: clicks so we can kind of count the
+65.76: number of clicks right from the mouse or
+68.32: the I guess the iPad or something and I
+71.4: kind of want the height to be displayed
+74.4: so we want to count that right uh let's
+77.24: say we have zero we have maybe 10 I
+79.96: don't know what the value and the idea
+82.72: is let's say you have three seconds to
+86.72: kind of Click as many times as you can
+89.759: here here and the more times you click
+92.399: the more power we generate up here and
+95.24: the higher the ball will go so it's
+98.119: basically some kind of skill game uh but
+100.759: I kind of want scale it so if you can
+103.24: click more times you will get more power
+105.6: and the ball will fly higher so yeah we
+108.439: want to implement some real physics I
+110.759: was thinking maybe adding some kind of
+112.799: balloons here with water in them so we
+115.92: can fly through those we'll see but that
+118.2: is basically the idea for the game so
+119.68: let's see if we can transfer this over
+122.119: to CLA 3.5 sonnet and kind of into our
+125.159: game yeah so okay so I went ahead I
+127.28: cleaned kind of up the UI how I wanted
+129.399: so let's just grab like kind of a
+131.16: screenshot of this now right so let's
+133.76: just copy our screenshot here and then
+136.4: we can head over to CLA R and let's kind
+139.68: of start our chat and let's call it
+142.36: something like I don't know the punch
+146.48: game right so let's start with that
+150.36: okay so I just want to start by pasting
+152.72: in the UI I want for this I think this
+155.4: might be a bit much to take on right
+157.72: away but uh I want to try it and see
+160.599: kind of where we can go from there so
+162.519: let me just come up with my prompt now
+164.64: and then we can see kind of where we can
+166.519: go from if this is too much to do or if
+169.319: you have to break down into smaller
+171.08: steps but uh let's give it a shot then
+173.92: okay so I'm just going to read out the
+175.08: prompt if you want to skip it that's
+176.36: fine but yeah I want to create a game in
+178.72: react I have uploaded a simple but
+179.959: sketch of an UI as an image yeah like we
+182.0: did here on a high level the game should
+184.159: work as follows the user aims the glow
+187.12: at the ball with the mouse movement and
+188.84: clicks the mouse as many times as
+190.64: possible in 3 seconds for each click
+193.28: more power is generated when the time
+196.0: runs out the boxing low punches the ball
+198.36: with amount of built up power the ball
+201.44: will of course travel the longer the
+203.0: more power it gets punched with the UI
+206.12: will track the number of clicks and
+207.44: height of the ball in real time the aim
+209.48: of the game is simple punch the ball as
+211.56: high as possible on a lower level we
+214.439: have some more important details
+215.72: regarding the physics of the game okay
+218.159: so this is a bit important because this
+219.84: is kind of what makes the game right so
+222.04: number one the ball must behave with
+223.64: real physics AKA Gravity the weight of
+226.879: the ball is around 350 G that's kind of
+229.519: like a soccer ball uh number two the
+231.799: weight of the boxing glow is 300 G the
+234.48: impact angle of the glow on the ball
+237.28: will of course reduce or improve the
+239.519: power power transferred from the glow uh
+241.92: to the ball kind of like a hitbox style
+244.56: air resistance will also affect the ball
+246.68: right so let's start by writing the
+249.92: first iteration of the punch game so
+252.079: kind of now I want to focus on the
+253.56: mechanics we will fix the UI later so
+255.959: add Sprites and stuff so now I just want
+258.519: to see where this takes us and is this
+260.799: too much is this uh kind of the right
+264.199: amount of instructions it might be a bit
+266.44: too much we might have to break it down
+267.8: to smaller steps but yeah let's just
+270.08: find out okay so let me zoom in a bit
+272.4: here so now we basically have the game
+275.68: mechanics so we can start the game by
+277.44: clicking here okay so we have to click
+279.4: as fast as you can so we're going to
+280.56: count the clicks so boom you can see we
+283.52: simulated the ball it went 94 M and then
+287.72: he kind of came uh down again uh ball
+291.32: punched to okay so we didn't record that
+294.199: so we might have to fix that so let me
+296.36: try to fix that we need to store how
+299.12: high we punch the ball before we kind of
+301.68: move into the UI visual part right okay
+304.84: so to kind of do that I just went we
+306.28: need to store how high the ball travel
+307.8: in so I kind of find the line of the
+309.68: code here so that's ball punch to kind
+312.039: of the ball height right uh as this play
+314.56: to the max height of the ball uh so we
+316.68: kind of want to keep that uh variable
+318.639: stored in our display here so we can
+321.28: kind of see how actually High we managed
+323.68: to punch it so you're right we should
+325.96: track the maximum height of the ball
+327.759: which is yeah so that's good so let's
+329.96: see if we can implement this feature so
+332.0: now we can kind of see how high did we
+334.6: actually punch it so let's try it again
+336.84: so start the game click as fast as you
+338.44: can 3 seconds and
+341.84: boom okay so we just got a static but
+344.68: that's fine so hopefully with this yeah
+347.4: so now you can see we got ball punch to
+349.8: a maximum height of 98.24%
+360.16: and actually create the UI for this now
+363.08: because yeah we want a glow we want a
+365.6: ball we want to see it right so let's
+368.08: try to do that okay so then I moved on
+369.88: to kind of great job now that we have
+371.28: our physics simul engine let's move on
+373.08: to the UI part I want to see the boxing
+374.72: glow the UI as we sketch it in the image
+377.639: right uh with physics simulation engine
+380.88: to power the game can you write the
+382.68: first iteration of the UI for a punching
+385.28: game so let's try that okay so we got
+387.24: something back here this looks
+388.319: interesting so let me see now so I want
+390.68: to click Start game I can't move the
+392.599: boxing GL I almost couldn't click okay
+395.08: so yeah that seemed to work pretty good
+397.84: five 4 that was quite high that seemed a
+401.44: bit high but uh yeah we don't have any
+403.759: way to restart the game so let's try
+406.199: that again so we start it we
+408.639: click and boom here goes the ball
+413.84: 588 uh okay that's a good start but I
+416.599: think we can improve on this okay so
+418.639: let's do some incremental adjustment so
+420.8: I just took a screenshot of what we have
+422.56: so far uh okay good start but let's make
+425.039: some changes I want the starting point
+426.72: of the ball to be right over the boxing
+428.36: glow hovering in the air I also want to
+430.599: be able to move the boxing glow um with
+432.919: the mouse horizontally Let's uh up the
+435.8: timer to 5 Seconds okay so now let's try
+438.599: it so uh okay perfect so we can move
+441.039: this you can see the timer going down
+443.039: I'm clicking so let's try to hit an
+444.639: angle here okay so you can see that
+446.96: travel uh to the left right so that's
+449.0: perfect
+450.08: okay so we need a reset game button I
+452.36: think other than that this is looking
+454.479: great to be honest so let's add a few
+456.479: more things and yeah I kind of want to
+459.52: move the timer I think below the box and
+462.919: let's add a reset button so basically a
+465.72: few more things I want to add a u timer
+467.28: below the box and add a reset game
+469.039: button yes that looks perfect so now
+471.0: let's try it so let's start this so I
+472.68: want to kind of test what uh is going to
+474.84: impact the height if I click now around
+476.919: 25 clicks so this was a bit of an angle
+480.199: so that was 858 now let's try to hit the
+482.919: ball straight on with 26 clicks and see
+486.159: if it goes higher than 858 so that is
+489.0: going of uh try to check our physical uh
+492.759: engine right so it was
+494.479: 268 okay so I yeah I I can't really
+498.28: remember so we got 30 m longer but
+500.44: that's fine doesn't matter too much okay
+502.68: so I'm very happy with this I think we
+504.319: can actually just move on now and start
+507.0: adding some more uis to this I want to
+508.879: add some spr from mid journey and kind
+510.879: of make it look a bit nicer so I just
+513.8: went I'm happy with the code I want to
+515.599: move this project into my vs code so
+517.32: let's start by creating a react app for
+518.919: this using vs code and the terminal so
+521.56: let's just run this and hopefully we
+523.2: will get this yeah create a react app
+526.12: right and then we can kind of initialize
+528.519: it and maybe install some tailwind and
+530.6: stuff and see where this can takes us so
+534.24: if we that was pretty quick that was a
+536.16: fast answer so yeah we want to create
+539.079: our app so let's just copy this let's
+541.16: head over to our vs code Studio I just
+543.68: created a new folder so let's just call
+545.839: it punch game right so let's fire up
+548.2: this and kind of get our react app
+550.56: installed here it's going to take a few
+553.0: seconds maybe a couple of minutes so
+555.16: let's just let this run okay so that was
+557.24: finished now we let's head back to clae
+559.959: Let's CD into our um project right let's
+564.48: clear that let's go back here and let's
+567.44: see uh okay so we have opened that right
+570.959: and now we kind of want to replace our
+572.959: appjs in source so I'm just going to
+575.88: copy this code here let's head back here
+578.839: let's follow this down Source appjs
+581.68: let's replace this right okay
+585.279: good and now we kind of want to install
+588.24: some tail win here that's fine let's go
+591.8: back here install some tail win and
+594.68: let's grab this right okay just a few
+598.72: steps here should be pretty quick
+601.76: okay uh now we want to go into our
+604.2: Tailwind config J as so let's open that
+607.92: we can find this replace that save it
+611.12: right good replace the components of uh
+616.12: Source index. CSS we can do that let's
+619.64: just find here and let's bring that on
+622.92: top right okay
+626.279: great very good stepbystep explanation
+629.64: here by uh uh son 3.5 make sure index.
+634.399: CSS
+635.959: imported right so we can copy this
+638.76: pasting that right save it okay so that
+641.2: should be all set up only what we need
+643.24: now is to kind of yeah get our code into
+646.44: this so we can just go how should I
+647.959: Implement our game code into react app
+650.079: in vs code right pretty easy step so we
+653.639: should go to our source folder we should
+655.2: name it punch game.js right so let's do
+658.32: that so let's let go to Source uh new
+661.72: file uh punch game.js right okay so in
+665.959: the artifact section here now we have
+667.959: something called code here so we can
+670.2: just copy that pretty simple to use
+672.68: actually let's head back to our vs code
+675.279: Studio let's save our punch game and
+678.2: let's see if there was there any other
+679.639: instructions maybe we should update our
+683.639: app.js we can do that
+686.24: app.js let's update that that looks good
+689.6: I think we actually are ready to run now
+691.639: so let's stop this clear mpm start right
+696.76: and let's fire up our Port 3,000 and see
+699.92: if we have our game here yes perfect so
+702.24: we can start it we can click and this
+705.76: should work pretty good and boom here we
+708.639: go so the next part now is of course
+710.72: going to be to do some adjustments get
+712.88: some Sprites and let's make this game a
+715.76: bit more interesting okay so the next
+717.44: prompt is going to be great now let's
+718.72: start adding some some Sprites to the
+719.88: game I want to add a Sprite to the ball
+721.519: ball Sprite PNG and the boxing glow glow
+724.04: Sprite PNG I've uploaded the image so we
+726.399: can test the code here before moving to
+728.0: vs code implement the first iteration of
+730.2: the Sprite addition to the game please
+732.16: so I went to Mid journey I created this
+734.88: Sprite so I kind of wanted this Poke
+736.76: Ball here as the ball and I created this
+739.92: glow I thought it was pretty cool so I
+741.72: went over to cona I added this here so
+743.959: we're going to download this uh with
+746.959: transparent background right okay that's
+749.32: the first Sprite here's the ball Sprite
+751.72: so let's download this with the
+753.6: transparent background right checked out
+756.519: and that should be our Sprite so we can
+758.44: go back to clae and let me just upload
+761.44: this images okay so we have our Sprites
+764.199: here uh they don't look transparent but
+766.199: I think they are so let's just run this
+768.199: now and see can we get these Sprites
+770.079: into our code okay so we have our code
+772.399: back here so yeah I think this should
+774.199: work you can see there's a bug here now
+775.639: we don't see the images but that should
+777.24: be a pretty easy effect because we have
+779.6: to ensure that our bold Sprite PNG glob
+781.76: Sprite PNG are placed in the public
+783.639: folder in your react project right so
+786.72: basically let's head over to vs code
+789.0: Studio so if we update our react app now
+791.839: you can see we have this but uh we don't
+794.32: have the images so what we can do we
+796.279: have to move these two uh images here
+799.72: into our public folder right so move
+802.56: that move that right and let's compile
+806.56: that and I think we should be good to go
+808.92: now so let's refresh yes perfect so now
+811.56: you can see we have our Sprite we have
+813.44: our boxing glove we can fire up this and
+816.199: this should move that Pokeball right uh
+819.56: yeah but that's pretty static let's try
+821.76: to make the ball rotate at is the Sprite
+825.88: rotate and let's make it a bit bigger so
+829.6: let's try to do that over here on CLA
+832.24: right so let's just try that works for
+833.72: more immersion let's add some new
+835.0: features I want the ball Sprite to
+836.56: rotate in alignment with the physic
+838.639: engine also make the ball and glow
+840.399: Sprite 50% bigger so let's try to run
+843.6: that and see if that could create a bit
+846.079: more immersion than this this is a bit
+848.48: static right okay so we have our code
+851.04: back here so let's just copy the code
+852.72: let's head back to V code Studio let's
+854.8: replace this right let's compile it and
+858.56: let's go to our react app let's refresh
+861.24: this okay so you can see it's bigger but
+864.399: we have to move the ball a bit but let's
+866.16: see if the ball rotates now if we punch
+868.759: it
+869.8: yeah perfect so that's pretty cool so
+872.0: that gives a bit more immersion you can
+873.8: see it's spinning around here but that's
+875.519: fine so we can reset game let's just
+877.68: move the ball a bit higher and I think
+880.079: we should be pretty much good to go we
+882.88: have to add some backgrounds and that's
+884.68: pretty much our simple game right okay
+886.959: so I'm pretty happy now I want to add
+888.519: some final touches so let me add some
+890.959: punching sounds to be played when the
+893.0: timer runs out so that's going to be
+894.36: punch MP3 and some background music
+897.04: music MP3 let's write the first
+899.6: first iteration of our code please and
+901.399: write the full new updated code so the
+904.24: next step then is going to be to create
+905.959: this punching sound and we need some
+908.24: background music and we have tools for
+910.16: that uh now of course we can just head
+913.24: over to so I went to 11 Labs the sound
+917.04: effects Library I just did punching
+918.959: sounds so I kind of did this one so
+921.0: let's have a quick
+922.24: listen I think that was pretty good and
+924.839: I went to sunno and I just put in like 8
+927.72: bit Nintendo style video game track
+929.6: chill music and I found this one I think
+932.48: I like this
+935.18: [Music]
+939.279: one that's pretty catchy right so let's
+941.959: try to implement those two things into
+944.24: our game for even more immersion so yeah
+947.56: so let's see how this goes okay so we
+949.92: have our code here so I'm just going to
+951.519: copy the code uh let's head back to vs
+954.0: code Studio let me paste in this and
+956.0: there's a few more things we have to do
+957.92: right we have to actually place our
+960.639: files into the correct folder so let me
+963.639: just set that up and let's see if it
+965.36: worked okay so I move the MP3 files here
+968.88: into a public folder so let's compile
+970.68: that let's go back to our react app
+973.44: let's refresh this and let's hear it now
+976.12: I don't know the volume might be pretty
+978.0: loud so let's hope it's not too
+981.279: loud okay so that's working let's hear
+984.0: the punching
+986.839: sound couldn't hear it
+993.16: okay so we heard the punching sound was
+994.6: way off so let's try to adjust that and
+996.519: turn the volume down maybe like I think
+998.639: we got to turn the volume down like 25%
+1001.319: or something so let's do a few changes
+1003.24: turn on the volume uh 25% also timing of
+1005.639: the punch was way off it should play
+1007.68: exactly when the 5sec time Runs Out
+1009.92: Implement these changes right the full
+1011.48: updated code pleas so yeah we are almost
+1015.6: done I think so let's see if we can do
+1017.279: this final tweaks and see if it works
+1019.959: okay so let's try it again now see if
+1022.079: that worked uh so let's try Okay so the
+1025.079: music is lower that's good so let's see
+1026.959: this punishing sound
+1029.8: [Music]
+1032.839: now that was way
+1035.72: off okay so I actually think there's a a
+1038.36: syn problem here so let's
+1041.28: try uh the punching sound must be as I
+1045.199: think it's not on point now so I try
+1047.24: that and then we got this code so let me
+1050.799: just copy that and see if that
+1054.679: worked okay so let's compile that okay
+1058.16: so start the game Let's refresh this
+1060.039: let's click hopefully this works
+1062.05: [Music]
+1063.559: now yes perfect okay so I'm
+1068.12: happy so I think the final thing I kind
+1071.08: of want to do is actually add some kind
+1073.919: of background so I was looking at
+1076.24: something like this okay so I kind of
+1078.4: ended up with this background image so
+1080.28: this is kind of the Pokemon looking up
+1082.32: and we got the big blue sky right okay
+1084.52: so I tried to upload our background
+1086.2: image that did not work because we
+1088.12: couldn't upload more than five images so
+1090.96: that is kind of a minus there might be
+1092.44: some workarounds and now that but I
+1094.159: decided just to open a new chat so I
+1096.32: just uploaded the game code the
+1097.64: background image I want to implement the
+1099.24: background uh to my game adjust a code
+1101.36: to dynamically show the full version of
+1102.88: the image keep the canvas setting as it
+1105.679: is now so let's just try that because I
+1108.08: kind of want to
+1109.4: keep the canvas as steady as possible
+1111.88: not to ruin up the whole game now so
+1114.36: let's just run this and see if this is
+1117.08: going to work right okay so that seemed
+1118.679: to work fine so let's see now I did a
+1121.12: few more changes yes we implemented the
+1123.96: background image that worked pretty good
+1126.4: uh I wrote a few new code uh I wanted to
+1129.28: change the font color to Black because
+1131.559: it was kind of white on Blue so we
+1133.36: couldn't really see it so we got that
+1135.48: and the final change I made I just want
+1137.84: to play the back music in a loop so it's
+1140.679: not affected by the start or reset game
+1143.48: that kind of brings you out of immersion
+1145.2: right and that is pretty much it so I
+1148.36: kind of think our game is finished now
+1151.36: and let's uh fire it up one last time
+1154.96: let's play it a bit and see kind of how
+1156.96: it works and let's see how high I can
+1159.2: actually get the ball to fly up in the
+1161.919: air okay so let's compile this we can
+1164.52: hear the music playing in the background
+1166.679: and let's just play the game a bit and
+1168.12: let me see how high I can get this okay
+1171.4: so I'm just going to click so how much
+1173.48: was
+1175.0: that 33 so that was 11:30 so let's
+1180.52: reset let me try again I'm so slow at
+1184.44: [Music]
+1186.679: this 37 so 12 12 29 I think I'm going to
+1192.36: call it there so yeah I'm kind of happy
+1195.32: how this turned out we could have added
+1197.4: the music more and stuff but but yeah I
+1200.12: like the Sprites I kind of like the
+1202.32: Aesthetics and we have some kind of
+1204.52: skill here right so yeah pretty cool so
+1207.76: let me just stop this and let's do kind
+1209.72: of a wrap up here overall this was a
+1212.2: very smooth experience running 3.5 Sonet
+1215.2: trying to create this simple game with
+1217.28: react uh I love the artifacts feature I
+1219.76: think that's going to bring a lot of
+1221.12: people over to anthropic it's great to
+1223.799: see this visual component on the code
+1226.159: you're working on so that's a big props
+1228.32: right uh they don't have the code
+1230.32: interpreter feature yet so you can't
+1231.799: actually execute scripts inside of the
+1234.0: browser uh I think they will add that
+1236.039: soon to be honest the pros were kind of
+1239.159: everything I had said now it's smooth
+1242.08: it's quick it does coding very well I
+1244.64: would say it's kind of the best
+1245.72: experience I have so far at least with
+1247.559: coding so I think they up the not a bit
+1250.08: there at least on gp4 level right and
+1254.039: the cons is kind of the rate limit
+1256.84: because you don't have that many
+1258.039: requests if even though I'm paying $20
+1260.28: hope they can improve that soon and I
+1262.6: could only upload five images that was a
+1265.2: bit annoying because I tried to be very
+1267.48: visual here in this game creation
+1269.84: process so another Pro uh on con was
+1272.96: that we can only upload five images but
+1275.279: we solve that by updating a new chat so
+1276.799: there's a work on there I guess but
+1278.44: overall my first impressions are great
+1280.84: and very uh smooth experience working
+1283.52: with 3.5 but I got some more exploring
+1285.88: to do before I can kind of come back
+1287.4: with my conclusion
+1289.08: uh so I'm going to be Ming this for a
+1290.52: few weeks now going forward and we can
+1292.2: talk about it later I'm going to be
+1293.72: using the API 2 so look out for that
+1296.799: other than that thank you for tuning in
+1298.48: hope you enjoyed this kind of in-depth
+1299.919: step-by-step process creating yeah kind
+1301.919: of a simple react game but some deep
+1304.279: features I think so hope you took
+1306.72: something from it come back for
+1308.36: Wednesday I hope for more stuff like
+1310.96: this like And subscribe give it a
+1313.08: comment if you enjoy this model too and
+1315.84: yeah see you again soon
