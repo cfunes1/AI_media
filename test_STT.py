@@ -1,12 +1,14 @@
+from typing import Any
 import project
 from project import STT, local_detect_language
 import time
 
 def time_function(func, desc, *args, **kwargs):
-    start_time = time.time()
-    result = func(*args, **kwargs)
-    end_time = time.time()
-    text = f"{desc} - Time taken by {func.__name__}: {end_time - start_time} seconds"
+    '''This function times the execution of the function passed as an argument and writes the time taken to a file called results.txt'''
+    start_time:float = time.time()
+    result: Any = func(*args, **kwargs)
+    end_time: float = time.time()
+    text: str = f"{desc} - Time taken by {func.__name__}: {end_time - start_time} seconds"
     print(text)
     with open("results.txt","a") as f:
         f.write(text+"\n")
