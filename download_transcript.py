@@ -1,9 +1,12 @@
-import sys
-from project import yt_transcript
+from carlos_tools_video import yt_transcript
 
-URL = input("URL of video: ")
-if URL == "":
-    URL = "https://www.youtube.com/watch?v=nfWlot6h_JM"
-transcript = yt_transcript(URL)
-
+"""Download the transcript of a youtube video."""
+url: str = input("URL of video to transcribe: ")
+if url == "":
+    print("No URL entered, using default video Intro to Large Language Models by Karpathy")
+    url = "https://www.youtube.com/watch?v=zjkBMFhNj_g&t=942s"
+transcript: str
+file_path: str
+transcript, file_path = yt_transcript(url)
 print(transcript)
+print("Transcript saved to: ", file_path)

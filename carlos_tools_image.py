@@ -4,7 +4,6 @@ import base64
 from PIL import Image
 from io import BytesIO
 from typing import Literal
-import os
 from carlos_tools_misc import get_file_path
 
 

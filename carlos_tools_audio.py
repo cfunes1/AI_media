@@ -1,10 +1,9 @@
 from openai import OpenAI
-import subprocess
-import pygame
-import os.path
-from time import sleep
 import whisper
 from faster_whisper import WhisperModel
+import subprocess
+import pygame
+from time import sleep
 from typing import Literal
 from carlos_tools_misc import get_file_path
 import torch
@@ -110,6 +109,7 @@ def local_whisper(
     detected_language: str = local_detect_language(directory=directory, file_name=file_name)  
     print(f"Detected language {detected_language}")
     return {"text":text,"language":detected_language}
+
 
 def remote_whisper(
         directory: str, 

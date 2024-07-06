@@ -1,4 +1,3 @@
-import project
 from project import STT, local_detect_language, save_text_to_file, downsample
 import time
 
