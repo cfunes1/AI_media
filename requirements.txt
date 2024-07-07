@@ -11,4 +11,5 @@ yt_dlp
 youtube_transcript_api
 python-dotenv
 elevenlabs
-antrophic
+anthropic
+

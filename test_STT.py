@@ -10,7 +10,7 @@ def time_function(func, desc, *args, **kwargs):
     end_time: float = time.time()
     text: str = f"{desc} - Time taken by {func.__name__}: {end_time - start_time} seconds"
     print(text)
-    with open("results.txt","a") as f:
+    with open("test_STT_results.txt","a") as f:
         f.write(text+"\n")
     return result
 

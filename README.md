@@ -59,3 +59,8 @@ le playing audio files.
    1. Create a .env file in the application directory and include your OpenAI API key:
 
       > OPENAI_API_KEY = "your Open AI key here"
+
+#### Other requirements
+
+   Ollama for locally run models
+   See requirements.txt

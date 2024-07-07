@@ -51,3 +51,4 @@ credentials.json
 /.mypy_cache/
 /.pytest_cache/
 /media/
+/private/
