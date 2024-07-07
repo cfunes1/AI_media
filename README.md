@@ -7,7 +7,7 @@ This repository contains various libraries of functions that are useful to test 
 
 ## project.py Functionality
 
-For any YouTube video the user selects, AI_media generates the following artifacts (prefixed by the YouTube video ID) :
+For any YouTube video the user selects, project.py generates the following artifacts:
 
 1. **Audio.mp3**: Sound of original video, cut to 10 mins if longer, as an MP3 file. 
 1. **[original language].txt**: AI-generated transcription from audio in its original language as a text file (generated only if original language is not English).
@@ -62,5 +62,5 @@ le playing audio files.
 
 #### Other requirements
 
-   Ollama for locally run models
-   See requirements.txt
+   - Ollama for locally run models
+   - See requirements.txt
