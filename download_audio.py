@@ -2,12 +2,12 @@ import sys, os
 from carlos_tools_video import get_video
 
 """Download the audio of a youtube video using stream selected by user."""
-URL = input("URL of video to download:")
-if URL == "":
-    # defaults to shake it off if no url entered
-    URL = "https://www.youtube.com/watch?v=nfWlot6h_JM"
+url: str = input("url of video to download: ")
+if url == "":
+    print("No url entered, using default video Shake it off by Taylor Swift")
+    url = "https://www.youtube.com/watch?v=nfWlot6h_JM"
 
-clean_title, video = get_video(URL)
+clean_title, video = get_video(url)
 
 # show available audio streams and let user choose one
 stream_query = video.streams.filter(only_audio=True).order_by('abr')

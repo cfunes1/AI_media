@@ -10,8 +10,9 @@ from carlos_tools_audio import (
     local_faster_whisper,
     remote_whisper,
 )
-from carlos_tools_misc import save_text_to_file, get_file_name, cut_text
+from carlos_tools_misc import save_text_to_file, get_file_name, cut_text, get_file_text
 from carlos_tools_image import generate_image, save_image_from_b64data
+from carlos_tools_LLMs import ollama_msg, openai_msg
 
 load_dotenv()
 # CLIENT_ID = os.getenv("CLIENT_ID")
@@ -157,7 +158,17 @@ def main():
 
     # summarize text using Open AI GPT-3.5 Turbo model
     print("Summarizing text...")
-    summary_txt: str = summarize_text(english_txt, run_local=args.run_local)
+    prompt = get_file_text("prompts","summarizing_videos.txt") + f"<<<{english_txt}>>>"
+    system_message: str = get_file_text("prompts", "helpful_assistant.txt")
+    history: list = []
+    if args.run_local:
+        model: str = "llama3"
+        history = ollama_msg(prompt, system_message, model)
+    else:
+        model: str = "gpt-3.5-turbo"
+        history = openai_msg(prompt, system_message, model)
+    summary_txt: str = history[-1]["content"]
+
     if not args.no_text:
         # save Summary to file
         file_name, output_count = get_file_name(output_count, "Summary.txt")
@@ -183,12 +194,12 @@ def main():
     if not args.no_image:
         print(f"Generating image based on summarized text...")
 
-        file_name, output_count = get_file_name(output_count, "Image1.png")
+        file_name, output_count = get_file_name(output_count, "Image.png")
         image_data = generate_image(summary_txt_for_image, "b64_json")
         print(f"Saving image at: {file_name}... ")
         save_image_from_b64data(image_data, directory=media_dir, file_name=file_name)
 
-        # file_name, output_count = get_file_name(output_count, "Image2.png")
+        # file_name, output_count = get_file_name(output_count, "Image.png")
         # image_data = generate_image(summary_txt_for_image, "url")
         # print(f"Saving image at: {file_name}... ")
         # save_image_from_URL(image_data, directory=media_dir, file_name=file_name)
@@ -200,46 +211,6 @@ def main():
 
     print("all done. Goodbye!...")
     return
-
-
-def summarize_text(english_txt: str, run_local: bool = False) -> str | None:
-    """Summarize text using OpenAI's library."""
-    if english_txt == "":
-        raise ValueError("Text cannot be empty")
-    prompt = f"The following text is the transcription of the initial minutes of a video. Based on this sample provide a summary of the content of the video to help potential watchers to decide to watch or not based on their interests. Include a numbered list of the topics covered if possible. Text: <<<{english_txt}>>>"
-    history = [
-        {"role": "system", "content": "You are a helpful assistant."},
-        {"role": "user", "content": prompt},
-    ]
-    if run_local:
-        # Point to the local server
-        client = OpenAI(base_url="http://localhost:1234/v1", api_key="lm-studio")
-        try:
-            stream = client.chat.completions.create(
-                model="lmstudio-community/Meta-Llama-3-8B-Instruct-GGUF",
-                messages=history,
-                temperature=0.7,
-                stream=True,
-            )
-        except OpenAIError as e:
-            raise ConnectionError("Local LM Studio server not available")
-    else:
-        # Point to OpenAI's server
-        client = OpenAI()
-        stream = client.chat.completions.create(
-            model="gpt-3.5-turbo",
-            messages=history,
-            stream=True,
-        )
-    collected_messages = []
-    for chunk in stream:
-        msg = chunk.choices[0].delta.content
-        if msg is not None:
-            collected_messages.append(msg)
-            print(msg, end="", flush=True)
-
-    print("\n")
-    return "".join(collected_messages)
 
 
 if __name__ == "__main__":

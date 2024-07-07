@@ -118,9 +118,9 @@ def yt_transcript(url: str, directory: str | None = None, file_name: str | None 
 
 def main():
     print("this is a library of functions for working with videos, mostly from YouTube. This is an example of of such functions")
-    url: str = input("URL of video to download: ")
+    url: str = input("url of video to download: ")
     if url == "":
-        print("No URL entered, using default video Shake it off by Taylor Swift")
+        print("No url entered, using default video Shake it off by Taylor Swift")
         url = "https://www.youtube.com/watch?v=nfWlot6h_JM"
     print("downloading video, using best video and audio streams and merging them...")
     print("video downloaded to: ",download_video(url))

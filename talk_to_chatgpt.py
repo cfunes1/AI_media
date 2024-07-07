@@ -11,6 +11,7 @@ import base64
 from pydub import AudioSegment
 from pydub.playback import play
 from dotenv import load_dotenv
+from carlos_tools_misc import get_file_text
 
 init()
 
@@ -24,7 +25,7 @@ def open_file(filepath):
         return infile.read()
 
 conversation1 = []  
-chatbot1 = open_file('chatbot1.txt')
+chatbot1 = get_file_text("prompts","helpful_assistant.txt")
 
 def chatgpt(conversation, chatbot, user_input, temperature=0.9, frequency_penalty=0.2, presence_penalty=0):
     from openai import OpenAI

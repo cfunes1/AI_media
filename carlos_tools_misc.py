@@ -47,3 +47,17 @@ def get_file_path(directory: str, file_name: str) -> str:
     if file_name == "":
         raise ValueError("file_name cannot be empty")
     return os.path.join(directory, file_name)
+
+def get_file_text(directory: str, file_name: str) -> str:
+    """Get the text from a file."""
+    if directory == "":
+        directory = os.curdir
+    if file_name == "":
+        raise ValueError("file_name cannot be empty")
+    file_path: str = os.path.join(directory, file_name)
+    try:
+        with open(file_path, "r") as text_file:
+            text: str = text_file.read()
+    except FileNotFoundError:
+        raise FileNotFoundError("File not found.")
+    return text
