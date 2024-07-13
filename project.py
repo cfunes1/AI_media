@@ -11,7 +11,7 @@ from carlos_tools_audio import (
     remote_whisper,
 )
 from carlos_tools_misc import save_text_to_file, get_file_name, cut_text, get_file_text
-from carlos_tools_image import generate_image, save_image_from_b64data
+from carlos_tools_image import generate_DALLE3_image, save_image_from_b64data
 from carlos_tools_LLMs import ollama_msg, openai_msg
 
 load_dotenv()
@@ -195,7 +195,7 @@ def main():
         print(f"Generating image based on summarized text...")
 
         file_name, output_count = get_file_name(output_count, "Image.png")
-        image_data = generate_image(summary_txt_for_image, "b64_json")
+        image_data = generate_DALLE3_image(summary_txt_for_image, "b64_json")
         print(f"Saving image at: {file_name}... ")
         save_image_from_b64data(image_data, directory=media_dir, file_name=file_name)
 

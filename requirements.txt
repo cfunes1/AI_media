@@ -12,4 +12,6 @@ youtube_transcript_api
 python-dotenv
 elevenlabs
 anthropic
-
+diffusers
+transformers
+transformers[sentencepiece]
