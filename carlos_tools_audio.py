@@ -66,7 +66,7 @@ def local_faster_whisper(
         file_name: str, 
         task: Literal["transcribe", "translate"] = "transcribe",
         language: str = None,
-        model_size: Literal["large-v3", "distil-large-v3"] = "large-v3", 
+        model_size: Literal["large-v3", "distil-large-v3"] = "distil-large-v3", 
         device: Literal["cuda", "cpu", "auto"] = "cuda",
         compute_type: Literal["float16", "int8"] = "float16"
         ):
@@ -94,7 +94,7 @@ def local_whisper(
         file_name: str, 
         task: Literal["transcribe", "translate"] = "transcribe",
         language: str = None,
-        model_size: Literal["tiny","base","small","medium","large-v3", "distil-large-v3"] = "distil-large-v3", 
+        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large'] = "large-v3", 
         device: Literal["cuda", "cpu", "auto"] = "cuda",
 ):
     """Converts speech to text using local original whisper model."""

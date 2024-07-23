@@ -1,0 +1,5 @@
+remote  whisper translation with original language  specified  - Time taken by remote_whisper: 111.7516770362854 seconds
+local whisper transcription with original es language and large-v3 model - Time taken by local_whisper: 4419.524910211563 seconds
+local faster whisper transcription with original es language and large-v3 model - Time taken by local_faster_whisper: 257.87849497795105 seconds
+local faster whisper transcription with original es language and distil-large-v3 model - Time taken by local_faster_whisper: 110.05606055259705 seconds
+local faster whisper transcription with original es language and distil-large-v3 model - Time taken by local_faster_whisper: 118.25450849533081 seconds
