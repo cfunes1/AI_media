@@ -1,6 +1,9 @@
 from openai import OpenAI
 import whisper
 from faster_whisper import WhisperModel
+from elevenlabs.client import ElevenLabs
+from elevenlabs import Voice, VoiceSettings, save
+from elevenlabs.client import ElevenLabs
 import subprocess
 import pygame
 from time import sleep
@@ -9,7 +12,7 @@ from carlos_tools_misc import get_file_path
 import torch
 
 
-def downsample(input_file, output_file, sample_rate=16000, bit_rate='32k'):
+def downsample(directory: str, input_file: str, output_file: str, sample_rate: int = 16000, bit_rate: str = '32k') -> None:
     '''Downsamples an audio file to 16 kHz mono with a bit rate of 32 kbps.
         -i input_file: Specifies the input file.
         -ar 16000: Sets the audio sample rate to 16 kHz.
@@ -17,24 +20,45 @@ def downsample(input_file, output_file, sample_rate=16000, bit_rate='32k'):
         -b:a 32k: Sets the audio bit rate to 32 kbps.
         output_file: Specifies the output file.
     '''
+    input_path = get_file_path(directory, input_file)
+    output_path = get_file_path(directory, output_file)
+    
     command = [
-        'ffmpeg', '-i', input_file,
+        'ffmpeg', '-i', input_path,
         '-ar', str(sample_rate),
         '-ac', '1',
         '-b:a', bit_rate,
-        output_file
+        output_path
     ]
     subprocess.run(command, check=True)
 
 
-def text_to_speech(text: str, directory: str, file_name: str) -> None:
+
+def text_to_speech(text: str, directory: str, file_name: str, speed: float = 1.0) -> None:
     """Convert text to speech using OpenAI's library."""
     if text == "":
         raise ValueError("Text cannot be empty")
     file_path: str = get_file_path(directory, file_name)
     client = OpenAI()
-    response = client.audio.speech.create(model="tts-1", voice="alloy", input=text)
+    response = client.audio.speech.create(model="tts-1", voice="echo", input=text, speed=speed)
     response.stream_to_file(file_path)
+
+def text_to_speech_elevenlabs(text: str, directory: str, file_name: str) -> None:
+    """Convert text to speech using Eleven Labs' library."""
+    if text == "":
+        raise ValueError("Text cannot be empty")
+    file_path: str = get_file_path(directory, file_name)
+    client = ElevenLabs()
+
+    audio = client.generate(
+        text=text,
+        voice=Voice(
+            voice_id='IKne3meq5aSn9XLyUdCD',
+            settings=VoiceSettings(stability=0.71, similarity_boost=0.5, style=0.0, use_speaker_boost=True)
+        )
+    )   
+    save(audio,file_path)
+
 
     
 def play_mp3(directory: str, file_name: str) -> None:

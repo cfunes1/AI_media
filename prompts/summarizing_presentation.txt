@@ -1,0 +1,5 @@
+I need you to create a detailed summary of a lecture based on the text from all the slides used in the lecture and a transcription of the full lecture. Please follow these steps to ensure the summary is structured well:
+	1. Use the structure and order of the topics presented in the slides as the foundation for your summary. Maintain all section titles, bullet points, and key points in the same order as they appear on the slides.
+	2. Expand on each bullet point or section with additional details, explanations, or examples drawn from the lecture transcription. These extra details should directly follow each bullet point or section title in a separate line, adding context and depth to the slide content.
+	3. Ensure consistency in tone and format. The additional comments should be in standard text, placed immediately after each bullet point, in a separate line.
+The result should be a well-organized summary that stays true to the slide structure but provides richer information by incorporating relevant points from the full lecture.
