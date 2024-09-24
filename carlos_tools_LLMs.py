@@ -13,10 +13,10 @@ anthropic_apikey: str = os.getenv("ANTHROPIC_API_KEY")
 def openai_msg(prompt: str, system_message: str, model: str) -> str | None:
     """Single message chat with intelligent assistant via OpenAI."""
     openai_client = openai.OpenAI(api_key=openai_apikey)
-    history = [
-        {"role": "system", "content": system_message},
-        {"role": "user", "content": prompt},
-    ]
+    history = []
+    if system_message:
+        history.append({"role": "system", "content": system_message})
+    history.append({"role": "user", "content": prompt})
     print(f"\nStarting single-message OpenAI chat with {model}...")
     stream = openai_client.chat.completions.create(
         model=model,
@@ -39,10 +39,10 @@ def openai_msg(prompt: str, system_message: str, model: str) -> str | None:
 def ollama_msg(prompt: str, system_message: str, model: str) -> str | None:
     """single message chat with an intelligent assistant locally via Ollama."""
     ollama_client = openai.OpenAI(base_url="http://localhost:11434/v1", api_key=ollama_apikey)
-    history = [
-        {"role": "system", "content": system_message},
-        {"role": "user", "content": prompt},
-    ]
+    history = []
+    if system_message:
+        history.append({"role": "system", "content": system_message})
+    history.append({"role": "user", "content": prompt})
     print(f"\nStarting single-message Ollama chat with {model}...")
     try:
         stream = ollama_client.chat.completions.create(
