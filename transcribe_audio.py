@@ -6,7 +6,9 @@ from carlos_tools_misc import save_text_to_file
 # Set up argument parser
 parser = argparse.ArgumentParser(description="Transcribe audio using local_faster_whisper.")
 parser.add_argument('input', type=str, help='Name of the audio file to read.')
+parser.add_argument('-d', '--directory', default="media", type=str, help='Directory where the files are located and saved.')
 parser.add_argument('-o','--output', type=str, help='Name of the output text transcription file.')
+
 
 # Parse arguments
 args = parser.parse_args()
@@ -20,14 +22,14 @@ if args.output:
 else:
     output_file = os.path.splitext(input_file)[0] + ".txt"
 
-directory = "media"
+directory = args.directory.strip()
     
 # Example usage of the arguments
 print(f"Directory: {directory}")
 print(f"Input file: {input_file}")
 print(f"Output file: {output_file}")
 
-downsample(directory="media", input_file=input_file, output_file="downsampled.mp3")
+downsample(directory=directory, input_file=input_file, output_file="downsampled.mp3")
 
 # Call your transcription function (assuming it exists in carlos_tools_audio)
 transcription = local_faster_whisper(directory="media", file_name="downsampled.mp3", task="transcribe", language=None, model_size="distil-large-v3", device="cuda", compute_type="float16")
@@ -36,6 +38,6 @@ transcription = local_faster_whisper(directory="media", file_name="downsampled.m
 
 text: str = transcription["text"]
 
-save_text_to_file(text, "media", output_file)
+save_text_to_file(text, directory, output_file)
 
 

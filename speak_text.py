@@ -11,7 +11,6 @@ def main():
     
     # Parse arguments
     args = parser.parse_args()
-
     # Strip leading/trailing whitespace from input file name
     input_file = args.input.strip()
 
@@ -33,6 +32,8 @@ def main():
     
     #if text is too long for open ai, use elevenlabs
     if len(text)> 4096:
+        print("text length: ", len(text))    
+        print("using elevenlabs...")
         text_to_speech_elevenlabs(text, directory, output_file)
     else:
         text_to_speech(text, directory, output_file, 1.1)
