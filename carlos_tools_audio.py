@@ -33,20 +33,27 @@ def downsample(directory: str, input_file: str, output_file: str, sample_rate: i
     subprocess.run(command, check=True)
 
 
-
 def text_to_speech(text: str, directory: str, file_name: str, speed: float = 1.0) -> None:
     """Convert text to speech using OpenAI's library."""
     if text == "":
         raise ValueError("Text cannot be empty")
+    l = len(text)
+    if l> 4096:
+        raise ValueError(f"Text length ({l}) too long for TTS-1")
     file_path: str = get_file_path(directory, file_name)
     client = OpenAI()
     response = client.audio.speech.create(model="tts-1", voice="echo", input=text, speed=speed)
     response.stream_to_file(file_path)
 
+
 def text_to_speech_elevenlabs(text: str, directory: str, file_name: str) -> None:
     """Convert text to speech using Eleven Labs' library."""
     if text == "":
         raise ValueError("Text cannot be empty")
+    l = len(text)
+    if l> 5000:
+        raise ValueError(f"Text length ({l}) too long for Eleven Labs")
+    
     file_path: str = get_file_path(directory, file_name)
     client = ElevenLabs()
 
@@ -58,7 +65,6 @@ def text_to_speech_elevenlabs(text: str, directory: str, file_name: str) -> None
         )
     )   
     save(audio,file_path)
-
 
     
 def play_mp3(directory: str, file_name: str) -> None:
