@@ -21,7 +21,7 @@ def main():
     history = openai_msg(prompt, system_message, "gpt-4o")
     openai_text = history[-1]["content"]    
 
-    history = ollama_msg(prompt, system_message, "llama3.1")
+    history = ollama_msg(prompt, system_message, "llama3.2")
     ollama_text = history[-1]["content"]
 
     history = anthropic_msg(prompt, system_message, "claude-3-5-sonnet-20240620")
