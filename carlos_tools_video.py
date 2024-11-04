@@ -87,10 +87,48 @@ def download_video(url: str, directory: str | None = None, file_name: str | None
     ydl_opts: dict = {
         "outtmpl": file_path,  # Output template
     }
-    with YoutubeDL(ydl_opts) as ydl:
-        ydl.download(url)
-    return file_path
 
+    # Download the video and capture the filename
+    with YoutubeDL(ydl_opts) as ydl:
+        # ydl.download(url)
+        info = ydl.extract_info(url, download=True)
+        filename = ydl.prepare_filename(info)  # Get the full filename
+
+    print("Video downloaded at:", filename)
+    return filename
+
+def download_audio(url: str, directory: str | None = None, file_name: str | None = None) -> str:
+    """Download the audio of a video """
+    if directory is None:
+        directory = os.getcwd()
+    if file_name is None:
+        file_name = "%(title)s"
+    file_path = os.path.join(directory, file_name) + ".%(ext)s"
+    print(f"{file_path=}")
+    # Define download options
+    ydl_opts: dict = {
+        'format': 'bestaudio/best',       # Download the best audio format available
+        "outtmpl": file_path,  # Output template     
+        'keepvideo': True,  # Keep the original file after conversion   
+        'postprocessors': [
+        {
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '32',  # Bitrate in kbps
+        }
+    ]
+    }
+
+    # Download the video and capture the filename
+    with YoutubeDL(ydl_opts) as ydl:
+        # ydl.download(url)
+        info = ydl.extract_info(url, download=True)
+        original_filename = ydl.prepare_filename(info)  # Get the full filename
+        downsampled_filename = ydl.prepare_filename(info).rsplit(".", 1)[0] + ".mp3"  # Ensure .mp3 extension
+
+    print(f"Original audio of video downloaded at {original_filename}")
+    print(f"Audio of video downloaded as 32k bitrate mp3 at {downsampled_filename}")
+    return original_filename, downsampled_filename
 
 def yt_transcript(url: str, directory: str | None = None, file_name: str | None = None) -> tuple[str, str]:
     """Get the transcript of a youtube video. Returns a tuple with the transcript in text format and the file path of the saved file."""

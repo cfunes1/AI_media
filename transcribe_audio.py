@@ -31,7 +31,6 @@ print(f"Output file: {output_file}")
 
 downsample(directory=directory, input_file=input_file, output_file="downsampled.mp3")
 
-# Call your transcription function (assuming it exists in carlos_tools_audio)
 transcription = local_faster_whisper(directory=directory, file_name="downsampled.mp3", task="transcribe", language=None, model_size="distil-large-v3", device="cuda", compute_type="float16")
 
 # transcription = remote_whisper(directory="media", file_name="downsampled.mp3", task="transcribe", language=None)
