@@ -33,6 +33,29 @@ def downsample(directory: str, input_file: str, output_file: str, sample_rate: i
     subprocess.run(command, check=True)
 
 
+def chunk_text(text: str, chunk_size: int = 4096) -> list:
+    """Chunk text into smaller pieces, ensuring splits occur after periods or return characters."""
+    chunks = []
+    start = 0
+
+    while start < len(text):
+        end = min(start + chunk_size, len(text))
+        if end < len(text):
+            # Find the last period or return character within the chunk
+            split_point = max(text.rfind('.', start, end), text.rfind('\n', start, end))
+            if split_point == -1:
+                split_point = end
+            else:
+                split_point += 1  # Include the period or return character in the chunk
+        else:
+            split_point = end
+
+        chunks.append(text[start:split_point].strip())
+        start = split_point
+
+    return chunks
+
+
 def text_to_speech(text: str, directory: str, file_name: str, speed: float = 1.0) -> None:
     """Convert text to speech using OpenAI's library."""
     if text == "":
@@ -174,4 +197,3 @@ def remote_whisper(
     if detected_language == None or text == None:
         raise ValueError("No language or text detected")
     return {"text":text,"language":detected_language}
-                      
