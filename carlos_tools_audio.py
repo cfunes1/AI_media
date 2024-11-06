@@ -9,7 +9,9 @@ import pygame
 from time import sleep
 from typing import Literal
 from carlos_tools_misc import get_file_path
+from pydub import AudioSegment
 import torch
+import os
 
 
 def downsample(directory: str, input_file: str, output_file: str, sample_rate: int = 16000, bit_rate: str = '32k') -> None:
@@ -197,3 +199,16 @@ def remote_whisper(
     if detected_language == None or text == None:
         raise ValueError("No language or text detected")
     return {"text":text,"language":detected_language}
+
+
+def increase_volume(directory:str, input_file, output_file, db_increase):
+    # Load the audio file
+    audio = AudioSegment.from_file(os.path.join(directory,input_file))
+    
+    # Increase the volume
+    louder_audio = audio + db_increase  # Increase volume by db_increase decibels
+    
+    # Export the result
+    louder_audio.export(os.path.join(directory,output_file), format="mp3")
+    print(f"Volume increased by {db_increase} dB and saved to {output_file}")
+

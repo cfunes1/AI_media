@@ -1,6 +1,6 @@
 import argparse
 import os
-from carlos_tools_audio import local_faster_whisper, remote_whisper, downsample
+from carlos_tools_audio import local_faster_whisper, local_whisper, remote_whisper, downsample
 from carlos_tools_misc import save_text_to_file
 
 # Set up argument parser
@@ -31,9 +31,11 @@ print(f"Output file: {output_file}")
 
 downsample(directory=directory, input_file=input_file, output_file="downsampled.mp3")
 
-transcription = local_faster_whisper(directory=directory, file_name="downsampled.mp3", task="transcribe", language=None, model_size="distil-large-v3", device="cuda", compute_type="float16")
+# transcription = local_faster_whisper(directory=directory, file_name="downsampled.mp3", task="transcribe", language="es", model_size="distil-large-v3", device="cuda", compute_type="float16")
 
-# transcription = remote_whisper(directory="media", file_name="downsampled.mp3", task="transcribe", language=None)
+# transcription = local_whisper(directory=directory, file_name="downsampled.mp3", task="transcribe", language=None, model_size="large-v3", device="cuda")
+
+transcription = remote_whisper(directory="media", file_name="downsampled.mp3", task="transcribe", language=None)
 
 text: str = transcription["text"]
 
