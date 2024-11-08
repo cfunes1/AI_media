@@ -44,20 +44,23 @@ def main():
             text_to_speech(list[i], directory,filename, 1)
     else:
         text_to_speech(text, directory, output_file, 1)
-        increase_volume(directory=directory, input_file=output_file,output_file=output_file,db_increase=10)
     
     # merge audio files
     if len(filenames)>1:
         print("merging audio files...\n")
         concat_filenames = '|'.join([os.path.join(directory, f) for f in filenames])
-        # command = f'ffmpeg -i "concat:{concat_filenames}" -c copy "{os.path.join(directory, output_file)}"'
-        command = f'ffmpeg -i "concat:{concat_filenames}" -filter:a "volume=10db" -c:a aac -strict experimental "{os.path.join(directory, output_file)}"'
+        output = os.path.join(directory, output_file)
+        command = f'ffmpeg -i "concat:{concat_filenames}" -c copy "{output}"'
         print(command)
         os.system(command)
+
+        # remove individual files
         for filename in filenames:
             print(f"removing {filename}...\n")
             os.remove(os.path.join(directory, filename))
     
+    # increase volume
+    increase_volume(directory=directory, input_file=output_file,output_file=output_file,db_increase=10)
 
     print("playing audio...")
     play_mp3(directory, output_file)
