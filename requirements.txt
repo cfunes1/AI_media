@@ -15,3 +15,8 @@ anthropic
 diffusers
 transformers
 transformers[sentencepiece]
+langchain
+langchain-openai
+langchain-anthropic
+langchain-ollama
+langserve[all]
