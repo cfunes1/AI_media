@@ -12,7 +12,7 @@ def transcribe_chunk(model, file_path):
     transcription = ' '.join(segment.text for segment in segments)
     return transcription
 
-def record_chunk(p, stream, file_path, chunk_length=1):
+def record_chunk(p, stream, file_path, chunk_length=2):
     frames = []
     for _ in range(0, int(16000 / 1024 * chunk_length)):
         data = stream.read(1024)
@@ -27,7 +27,7 @@ def record_chunk(p, stream, file_path, chunk_length=1):
 
 def main2():
     # Choose your model settings
-    model_size = "medium.en"
+    model_size = "base.en"
     model = WhisperModel(model_size, device="cuda", compute_type="float16")
 
     p = pyaudio.PyAudio()

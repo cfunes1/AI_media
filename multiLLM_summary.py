@@ -24,7 +24,7 @@ def main():
     history = ollama_msg(prompt, system_message, "llama3.2")
     ollama_text = history[-1]["content"]
 
-    history = anthropic_msg(prompt, system_message, "claude-3-5-sonnet-20240620")
+    history = anthropic_msg(prompt, system_message, "claude-3-5-sonnet")
     anthropic_text = history[-1]["content"]
 
     # Concatenate responses with headers
