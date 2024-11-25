@@ -18,11 +18,11 @@ def main():
     prompt = args.prompt
 
     # Call LLM functions and extract the content for the assistant message
-    history = openai_msg(prompt, system_message, "gpt-4o")
-    openai_text = history[-1]["content"]    
-
     history = ollama_msg(prompt, system_message, "llama3.2")
     ollama_text = history[-1]["content"]
+
+    history = openai_msg(prompt, system_message, "gpt-4o")
+    openai_text = history[-1]["content"]    
 
     history = anthropic_msg(prompt, system_message, "claude-3-5-sonnet")
     anthropic_text = history[-1]["content"]
