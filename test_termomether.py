@@ -25,7 +25,7 @@ def speak(text):
     engine.say(text)
     engine.runAndWait()
 
-prompt = "If you see a number displayed in a device in the image, just say the number. Otherwise say 'no device'"
+prompt = "If you see a number displayed in a device in the image, just say the number. If you see more than one number, just say the number displayed in the largest font. Otherwise say 'no device'"
 model = "gpt-4o-mini"
 directory = ""
 file_name = "image.jpg"
