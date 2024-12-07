@@ -1,8 +1,11 @@
 import openai
 import anthropic
+import ollama
 import dotenv
 import os
 from carlos_tools_misc import get_file_text
+from carlos_tools_image import encode_image_to_base64
+from pathlib import Path
 
 dotenv.load_dotenv()
 
@@ -35,6 +38,61 @@ def openai_msg(prompt: str, system_message: str, model: str) -> str | None:
     print()  # New line after the full response
     history.append(new_message)
     return history
+
+def ollama_img_msg(prompt: str, model: str, img_directory: str, img_file_name: str) -> str | None:
+    """single message chat with an intelligent assistant locally via Ollama with image."""
+    img_path = os.path.join(img_directory, img_file_name)
+    if not Path(img_path).is_file():
+        raise FileNotFoundError(f"Image file {img_path} not found")
+    stream = ollama.chat(
+        model=model,
+        messages=[{"role": "user", "content": prompt, "images": [img_path]}],
+        stream=True,
+    )
+    for chunk in stream:
+        print(chunk['message']['content'],end='',flush=True)
+
+def openai_img_msg(prompt: str, model: str, img_directory: str, img_file_name: str) -> str | None:
+    """Single message chat with an intelligent assistant locally via OpenAI with image."""
+    img_path = os.path.join(img_directory, img_file_name)
+    if not Path(img_path).is_file():
+        raise FileNotFoundError(f"Image file {img_path} not found")
+    
+    encoded_image = encode_image_to_base64(img_directory, img_file_name)
+
+    openai_client = openai.OpenAI(api_key=openai_apikey)
+    
+    stream = openai_client.chat.completions.create(
+        model=model,
+        messages=[
+            {
+            "role": "user",
+            "content": [
+                {
+                "type": "text",
+                "text": prompt,
+                },
+                {
+                "type": "image_url",
+                "image_url": {
+                    "url":  f"data:image/jpeg;base64,{encoded_image}"
+                },
+                },
+            ],
+            }
+        ],
+        temperature=0.7,
+        stream=True,
+    )
+    
+    new_message = {"role": "assistant", "content": ""}
+    for chunk in stream:
+        if chunk.choices[0].delta.content:
+            print(chunk.choices[0].delta.content, end="", flush=True)
+            new_message["content"] += chunk.choices[0].delta.content
+
+    print()  # New line after the full response
+    return new_message["content"]
 
 def ollama_msg(prompt: str, system_message: str, model: str) -> str | None:
     """single message chat with an intelligent assistant locally via Ollama."""

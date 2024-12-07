@@ -44,7 +44,7 @@ def main():
         # other params...
     )
     model_anthropic = ChatAnthropic(
-        model="claude-3-sonnet-20240229",
+        model="claude-3-5-sonnet-20241022",
         temperature=0,
         max_tokens=1024,
         timeout=None,
@@ -67,8 +67,8 @@ def main():
     def combine_responses(result: dict) -> str:
         print(f"result from parallel execution \n {result}\n")
         return (
-            "Response from OpenAI:\n" + result["openai"] + "\n\n\n" +
             "Response from Anthropic:\n" + result["anthropic"] + "\n\n\n" +
+            "Response from OpenAI:\n" + result["openai"] + "\n\n\n" +
             "Response from Ollama:\n" + result["ollama"] + "\n\n\n" 
         )
 

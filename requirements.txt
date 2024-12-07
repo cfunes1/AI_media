@@ -20,3 +20,4 @@ langchain-openai
 langchain-anthropic
 langchain-ollama
 langserve[all]
+opencv-python

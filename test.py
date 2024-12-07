@@ -1,34 +1,25 @@
-from langchain_core.runnables import RunnableLambda
+from carlos_tools_LLMs import ollama_img_msg, openai_img_msg
+from carlos_tools_misc import get_file_text
+from carlos_tools_image import capture_image_from_camera
+from PIL import Image
 
-def add_one(x: int) -> int:
-    return x + 1
+system_message: str = get_file_text("prompts", "helpful_assistant.txt")
 
-def mul_two(x: int) -> int:
-    return x * 2
+prompt = "describe this image"
 
-def mul_three(x: int) -> int:
-    return x * 3
+# model="llama3.2-vision"
+# directory=""
+# file_name = "image.jpg"
+# print(ollama_img_msg(prompt, model, img_directory=directory, img_file_name=file_name))
 
-runnable_1 = RunnableLambda(add_one)
-runnable_2 = RunnableLambda(mul_two)
-runnable_3 = RunnableLambda(mul_three)
+print("press enter when ready for photo")
+input()
+img = capture_image_from_camera()
+img.show()
+img.save("image.jpg")
 
-sequence = runnable_1 | {  # this dict is coerced to a RunnableParallel
-    "mul_two": runnable_2,
-    "mul_three": runnable_3,
-}
-# Or equivalently:
-# sequence = runnable_1 | RunnableParallel(
-#     {"mul_two": runnable_2, "mul_three": runnable_3}
-# )
-# Also equivalently:
-# sequence = runnable_1 | RunnableParallel(
-#     mul_two=runnable_2,
-#     mul_three=runnable_3,
-# )
-
-sequence.invoke(1)
-await sequence.ainvoke(1)
-
-sequence.batch([1, 2, 3])
-await sequence.abatch([1, 2, 3])
+prompt = "if there is a thermometer in the image, just say the temperature. Othewise say 'no thermometer'"
+model="gpt-4o-mini"
+directory=""
+file_name = "image.jpg"
+response = openai_img_msg(prompt, model, img_directory=directory, img_file_name=file_name)

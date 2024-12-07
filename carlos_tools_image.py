@@ -7,6 +7,8 @@ from typing import Literal
 from carlos_tools_misc import get_file_path
 import torch
 from diffusers import StableDiffusion3Pipeline, AutoPipelineForText2Image
+import cv2
+from pathlib import Path
 
 
 def generate_DALLE3_image(
@@ -35,6 +37,33 @@ def generate_DALLE3_image(
     else:
         return response.data[0].b64_json
 
+def capture_image_from_camera() -> Image:
+    '''Capture an image from the camera.'''
+    cap = cv2.VideoCapture(0)  # Open the default camera
+    if not cap.isOpened():
+        raise Exception("Could not open video device")
+    
+    ret, frame = cap.read()
+    cap.release()
+    
+    if not ret:
+        raise Exception("Failed to capture image")
+    
+    # Convert the captured frame to RGB format
+    frame_rgb = cv2.cvtColor(frame, cv2.COLOR_BGR2RGB)
+    
+    # Convert the frame to a PIL image
+    image = Image.fromarray(frame_rgb)
+    return image
+
+
+def encode_image_to_base64(directory: str, file_name: str) -> str:
+    """Encode an image to a base64 string."""
+    image_path: str = get_file_path(directory, file_name)
+    if not Path(image_path).is_file():
+        raise FileNotFoundError(f"Image file {image_path} not found")
+    with open(image_path, "rb") as image_file:
+        return base64.b64encode(image_file.read()).decode('utf-8')
 
 def save_image_from_URL(url: str, directory: str, file_name: str) -> None:
     """Save an image from a URL."""
