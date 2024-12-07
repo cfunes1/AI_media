@@ -21,3 +21,4 @@ langchain-anthropic
 langchain-ollama
 langserve[all]
 opencv-python
+pyttsx3
