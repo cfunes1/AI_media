@@ -2,7 +2,7 @@ import time
 import pygame
 import pyttsx3
 from carlos_tools_LLMs import openai_img_msg
-from carlos_tools_misc import get_file_text
+# from carlos_tools_misc import get_file_text
 from carlos_tools_image import capture_image_from_camera
 from dotenv import load_dotenv
 
