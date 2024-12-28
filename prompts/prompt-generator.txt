@@ -1,0 +1,1 @@
+Generate a prompt with the goal of producing this latest result without multiple rounds of feedback. Then test the results and compare it with the previous result. 

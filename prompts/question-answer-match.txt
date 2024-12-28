@@ -1,0 +1,43 @@
+ 
+Please create a table matching the interview questions below with relevant stories from the "latest stories" document. 
+Format as follows: 
+No introductory paragraph explaining work, just the results in table format.
+Use tabs between columns (no extra spaces)
+No blank lines between rows
+No blank lines between questions
+Include these columns: 
+	• Question ID
+	• Question
+	• Story# (simple counter for stories per question, arranged from highest to lowest match strength)
+	• Story (name from the document list below)
+	• Match strength (5=Perfect, 4=Strong, 3=Good but needs adaptation, 2=Weak, 1=Very weak)
+	• Rationale (brief explanation of why this story matches. No need to restate the match strength categories)
+If NO stories match the question at all, include only one row with: 
+	• Question ID
+	• Question
+	• Story# = 0
+	• Story = "No match"
+	• Match strength = 0
+	• Rationale = Brief explanation of why no stories match
+If there are many strong or perfect matches, make sure to include them all up to 4. 
+Otherwise, include all relevant stories with match strength 1-5, omitting any "No match" rows
+Stories to select from: 
+	• PNC Trade Finance
+	• PNC Canada risk review
+	• OLAF Scope
+	• OLAF Innovation
+	• Ripple pilot
+	• Global Pay Roadmap
+	• Global Pay Research
+	• Global Pay Roles
+	• Global Pay STP rates
+	• GBAC Vision
+	• Statements Hub
+	• About me
+	• The PNC Experience
+	• The 2014 sabbatical
+	• The American Express experience
+	• The Amazon experience
+	• The 2023 sabbatical
+I'll post the questions in groups. Here is the first group. 
+

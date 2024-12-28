@@ -22,3 +22,5 @@ langchain-ollama
 langserve[all]
 opencv-python
 pyttsx3
+pytesseract
+pyperclip
