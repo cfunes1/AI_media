@@ -35,7 +35,7 @@ def main():
     model_openai = ChatOpenAI(
         model="gpt-4o",
         temperature=0,
-        max_tokens=None,
+        max_tokens=4096,
         timeout=None,
         max_retries=2,
         # api_key="...",
@@ -46,7 +46,7 @@ def main():
     model_anthropic = ChatAnthropic(
         model="claude-3-5-sonnet-20241022",
         temperature=0,
-        max_tokens=1024,
+        max_tokens=4096,
         timeout=None,
         max_retries=2,
         # api_key="...",
@@ -56,7 +56,8 @@ def main():
     model_ollama = ChatOllama(
         model = "llama3.2",
         temperature = 0.8,
-        num_predict = 256,
+        num_predict = 4096,
+        max_tokens = 4096,
         # other params ...
     )
         

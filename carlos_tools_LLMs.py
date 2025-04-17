@@ -13,31 +13,6 @@ ollama_apikey: str = "ollama"
 openai_apikey: str = os.getenv("OPENAI_API_KEY")
 anthropic_apikey: str = os.getenv("ANTHROPIC_API_KEY")
 
-def openai_msg(prompt: str, system_message: str, model: str) -> str | None:
-    """Single message chat with intelligent assistant via OpenAI."""
-    openai_client = openai.OpenAI(api_key=openai_apikey)
-    history = []
-    if system_message:
-        history.append({"role": "system", "content": system_message})
-    history.append({"role": "user", "content": prompt})
-    print(f"\nStarting single-message OpenAI chat with {model}...")
-    stream = openai_client.chat.completions.create(
-        model=model,
-        messages=history,
-        temperature=0.7,
-        max_tokens=2000,
-        stream=True,
-    )
-    new_message = {"role": "assistant", "content": ""}
-    
-    for chunk in stream:
-        if chunk.choices[0].delta.content:
-            print(chunk.choices[0].delta.content, end="", flush=True)
-            new_message["content"] += chunk.choices[0].delta.content
-
-    print()  # New line after the full response
-    history.append(new_message)
-    return history
 
 def ollama_img_msg(prompt: str, model: str, img_directory: str, img_file_name: str) -> str | None:
     """single message chat with an intelligent assistant locally via Ollama with image."""
@@ -82,9 +57,9 @@ def openai_img_msg(prompt: str, model: str, img_directory: str, img_file_name: s
             }
         ],
         temperature=0.7,
+        max_tokens=4096,
         stream=True,
-    )
-    
+    )    
     new_message = {"role": "assistant", "content": ""}
     for chunk in stream:
         if chunk.choices[0].delta.content:
@@ -93,6 +68,32 @@ def openai_img_msg(prompt: str, model: str, img_directory: str, img_file_name: s
 
     print()  # New line after the full response
     return new_message["content"]
+
+def openai_msg(prompt: str, system_message: str, model: str) -> str | None:
+    """Single message chat with intelligent assistant via OpenAI."""
+    openai_client = openai.OpenAI(api_key=openai_apikey)
+    history = []
+    if system_message:
+        history.append({"role": "system", "content": system_message})
+    history.append({"role": "user", "content": prompt})
+    print(f"\nStarting single-message OpenAI chat with {model}...")
+    stream = openai_client.chat.completions.create(
+        model=model,
+        messages=history,
+        temperature=0.7,
+        max_tokens=4096,
+        stream=True,
+    )
+    new_message = {"role": "assistant", "content": ""}
+    
+    for chunk in stream:
+        if chunk.choices[0].delta.content:
+            print(chunk.choices[0].delta.content, end="", flush=True)
+            new_message["content"] += chunk.choices[0].delta.content
+
+    print()  # New line after the full response
+    history.append(new_message)
+    return history
 
 def ollama_msg(prompt: str, system_message: str, model: str) -> str | None:
     """single message chat with an intelligent assistant locally via Ollama."""
@@ -107,10 +108,11 @@ def ollama_msg(prompt: str, system_message: str, model: str) -> str | None:
             model=model,
             messages=history,
             temperature=0.7,
+            max_tokens=4096,
             stream=True,
         )
     except openai.APIConnectionError as e:
-        raise ConnectionError("Local LM Studio server not available")
+        raise ConnectionError("Local Ollama server not available")
     new_message = {"role": "assistant", "content": ""}
     for chunk in stream:
         if chunk.choices[0].delta.content:
@@ -128,7 +130,7 @@ def anthropic_msg(prompt: str, system_message: str | None =None, model: str="cla
     print(f"\nStarting single-message Anthropic with {model}...")
     stream = anthropic_client.messages.create(
         model=model,
-        max_tokens=1000,
+        max_tokens=4096,
         messages=history,
         system=system_message,
         stream=True
@@ -163,7 +165,7 @@ def openai_chat(system_message: str, model: str) -> list:
                 model=model,
                 messages=history,
                 temperature=0.7,
-                max_tokens=2000,
+                max_tokens=4096,
                 stream=True,
             )
             new_message = {"role": "assistant", "content": ""}
@@ -197,6 +199,7 @@ def ollama_chat(system_message: str, model: str) -> list:
                 model=model,
                 messages=history,
                 temperature=0.7,
+                max_tokens=4096,
                 stream=True,
             )
             new_message = {"role": "assistant", "content": ""}

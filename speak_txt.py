@@ -31,7 +31,7 @@ def main():
     print("converting text to audio...")
     
     filenames=[]
-    #if text is too long for open ai, use elevenlabs
+    #if text is too long for open ai, splits text into chunks
     if len(text)> 4096:
         print("splitting text...\n")
         list = chunk_text(text)
@@ -41,6 +41,7 @@ def main():
             print(list[i],"\n")
             filename=f"{base_name}{i}{ext}"
             filenames.append(filename)
+            # convert text to speech using OpenAI TTS-1 model
             text_to_speech(list[i], directory,filename, 1)
     else:
         text_to_speech(text, directory, output_file, 1)

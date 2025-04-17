@@ -5,23 +5,42 @@ import sys
 import time
 import signal
 import threading
+from PIL import Image
 
 def image_to_text(monitor):
+    last_error_time = 0
+    error_cooldown = 60  # Wait 60 seconds before showing same error again
+    
     try:
         while monitor['running']:
-            # Get image from clipboard
-            image = ImageGrab.grabclipboard()
-            
-            if image is not None:
-                # Convert image to text
-                text = pytesseract.image_to_string(image)
+            try:
+                # Get content from clipboard
+                clipboard_content = ImageGrab.grabclipboard()
                 
-                if text.strip():
-                    # Copy to clipboard
-                    pyperclip.copy(text)
-                    print("\nText extracted and copied to clipboard!")
-            
-            time.sleep(0.5)
+                # Only process if it's an image
+                if isinstance(clipboard_content, Image.Image):
+                    # Convert image to text
+                    text = pytesseract.image_to_string(clipboard_content)
+                    
+                    if text.strip():
+                        # Copy to clipboard
+                        pyperclip.copy(text)
+                        print("\nText extracted and copied to clipboard!")
+                        print(f"\nText: {text}")
+                
+                # If it's not an image, just continue monitoring
+                time.sleep(0.5)
+                
+            except Exception as e:
+                current_time = time.time()
+                # Only show error message if we haven't shown one recently
+                if current_time - last_error_time > error_cooldown:
+                    print(f"\nNotice: Skipping non-image clipboard content")
+                    last_error_time = current_time
+                
+                # Brief pause before continuing
+                time.sleep(0.5)
+                continue
             
     except Exception as e:
         print(f"An error occurred: {str(e)}")
@@ -45,6 +64,7 @@ def main():
     print("OCR Monitor Running")
     print("Use Win+Shift+S to capture screenshots")
     print("Press Ctrl+C to stop")
+    print("\nMonitoring clipboard for images...")
     
     # Set up Ctrl+C handler
     signal.signal(signal.SIGINT, signal_handler)

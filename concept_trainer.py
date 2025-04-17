@@ -38,7 +38,7 @@ def main():
     model_openai = ChatOpenAI(
         model="gpt-4o",
         temperature=0,
-        max_tokens=None,
+        max_tokens=4096,
         timeout=None,
         max_retries=2,
         # api_key="...",
@@ -49,7 +49,7 @@ def main():
     model_anthropic = ChatAnthropic(
         model="claude-3-sonnet-20240229",
         temperature=0,
-        max_tokens=1024,
+        max_tokens=4096,
         timeout=None,
         max_retries=2,
         # api_key="...",
@@ -59,7 +59,8 @@ def main():
     model_ollama = ChatOllama(
         model = "llama3.2",
         temperature = 0.8,
-        num_predict = 256,
+        num_predict = 4096,
+        max_tokens=4096,
         # other params ...
     )
         
@@ -118,8 +119,8 @@ def main():
     concept_summary = chain.invoke({"concept_list": concept_list})
     print("concept_summary=",concept_summary)
 
-    # final_summary = topic+": most important concepts\n\n"+combined_responses+"\n\n OVERALL SUMMARY FROM GPT:\n\n"+concept_list+"\n\n CONCEPT SUMMARY FROM GPT: \n\n"+concept_summary
-    final_summary = topic+": most important concepts\n\n"+concept_summary
+    final_summary = topic+": most important concepts\n\n"+combined_responses+"\n\n OVERALL SUMMARY FROM GPT:\n\n"+concept_list+"\n\n CONCEPT SUMMARY FROM GPT: \n\n"+concept_summary
+    # final_summary = topic+": most important concepts\n\n"+concept_summary
 
     print(final_summary)
 

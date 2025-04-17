@@ -4,7 +4,7 @@ from carlos_tools_audio import local_faster_whisper, local_whisper, remote_whisp
 from carlos_tools_misc import save_text_to_file
 
 # Set up argument parser
-parser = argparse.ArgumentParser(description="Transcribe audio using local_faster_whisper.")
+parser = argparse.ArgumentParser(description="Transcribe audio using whisper model.")
 parser.add_argument('input', type=str, help='Name of the audio file to read.')
 parser.add_argument('-d', '--directory', default="media", type=str, help='Directory where the files are located and saved.')
 parser.add_argument('-o','--output', type=str, help='Name of the output text transcription file.')
@@ -24,14 +24,13 @@ else:
 
 directory = args.directory.strip()
     
-# Example usage of the arguments
 print(f"Directory: {directory}")
 print(f"Input file: {input_file}")
 print(f"Output file: {output_file}")
 
 downsample(directory=directory, input_file=input_file, output_file="downsampled.mp3")
 
-# transcription = local_faster_whisper(directory=directory, file_name="downsampled.mp3", task="transcribe", language="es", model_size="distil-large-v3", device="cuda", compute_type="float16")
+# transcription = local_faster_whisper(directory=directory, file_name="downsampled.mp3", task="transcribe", language=None, model_size="distil-large-v3", device="cuda", compute_type="float16")
 
 # transcription = local_whisper(directory=directory, file_name="downsampled.mp3", task="transcribe", language=None, model_size="large-v3", device="cuda")
 
