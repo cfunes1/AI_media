@@ -25,7 +25,7 @@ def speak(text):
     engine.say(text)
     engine.runAndWait()
 
-prompt = "If you see a number displayed in a device in the image, just say the number. If you see more than one number, just say the number displayed in the largest font. Otherwise say 'no device'"
+prompt = "If you see a temperature displayed in a device in the image, just say the number. If you see more than one number, just say the number displayed in the largest font. Otherwise say 'no device'"
 model = "gpt-4o-mini"
 directory = ""
 file_name = "image.jpg"
@@ -41,8 +41,8 @@ while True:
 
     if response == "no device":
         speak("No thermometer detected")
-        if last_reading is None:
-            quit()
+        # if last_reading is None:
+        #     quit()
     else:
         try:
             new_reading = float(response)
