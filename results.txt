@@ -3,3 +3,11 @@ local whisper transcription with original es language and large-v3 model - Time 
 local faster whisper transcription with original es language and large-v3 model - Time taken by local_faster_whisper: 257.87849497795105 seconds
 local faster whisper transcription with original es language and distil-large-v3 model - Time taken by local_faster_whisper: 110.05606055259705 seconds
 local faster whisper transcription with original es language and distil-large-v3 model - Time taken by local_faster_whisper: 118.25450849533081 seconds
+local faster whisper transcription with original es language and large-v3 model - Time taken by OpenAI_transcribe: 9.863393545150757 seconds
+local faster whisper transcription with original es language and large-v3 model - Time taken by OpenAI_transcribe: 8.854768753051758 seconds
+local faster whisper transcription with original es language and large-v3 model - Time taken by OpenAI_transcribe: 7.322216510772705 seconds
+local faster whisper transcription with original es language and large-v3 model - Time taken by OpenAI_transcribe: 5.81140661239624 seconds
+OpenAI gpt-4o-transcribe - Time taken by OpenAI_transcribe: 7.060887813568115 seconds
+OpenAI gpt-4o-transcribe - Time taken by OpenAI_transcribe: 7.182490348815918 seconds
+OpenAI gpt-4o-mini-transcribe - Time taken by OpenAI_transcribe: 6.225088834762573 seconds
+OpenAI whisper-1-transcribe - Time taken by OpenAI_transcribe: 7.189107418060303 seconds

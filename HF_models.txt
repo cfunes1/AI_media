@@ -1,0 +1,571 @@
+🔄 Fetching tasks from Hugging Face API...
+✅ Successfully fetched data from API
+
+📊 CATEGORY SUMMARY
+==================================================
+
+Category                       Tasks    Models   Avg Models/Task
+-----------------------------------------------------------------
+Audio                          4        15       3.8            
+Computer Vision                18       70       3.9            
+Multimodal                     6        24       4.0            
+Natural Language Processing    12       39       3.2            
+Reinforcement Learning         1        2        2.0            
+Tabular                        2        2        1.0            
+-----------------------------------------------------------------
+TOTAL                          43       152      3.5            
+
+🏆 TOP CATEGORIES BY MODEL COUNT:
+1. Computer Vision: 70 models across 18 tasks
+2. Natural Language Processing: 39 models across 12 tasks
+3. Multimodal: 24 models across 6 tasks
+4. Audio: 15 models across 4 tasks
+5. Reinforcement Learning: 2 models across 1 tasks
+
+
+🤖 MODELS-FOCUSED BREAKDOWN
+================================================================================
+
+🗂️  AUDIO - 15 Models
+============================================================
+
+📋 Audio Classification (3 models)
+    SUMMARY: Audio classification is the task of assigning a label or class to a given audio. It can be used for recognizing which command a user is giving or the emotion of a statement, as well as identifying a speaker.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=KWwzcmG98Ds
+
+   1. speechbrain/google_speech_command_xvector
+      → An easy-to-use model for command recognition.
+   2. ehcalabres/wav2vec2-lg-xlsr-en-speech-emotion-recognition
+      → An emotion recognition model.
+   3. facebook/mms-lid-126
+      → A language identification model.
+
+📋 Audio-to-Audio (2 models)
+    SUMMARY: Audio-to-Audio is a family of tasks in which the input is an audio and the output is one or multiple generated audios. Some example tasks are speech enhancement and source separation.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=iohj7nCCYoM
+
+   1. ResembleAI/resemble-enhance
+      → A speech enhancement model.
+   2. microsoft/speecht5_vc
+      → A model that can change the voice in a speech recording.
+
+📋 Automatic Speech Recognition (5 models)
+    SUMMARY: Automatic Speech Recognition (ASR), also known as Speech to Text (STT), is the task of transcribing a given audio to text. It has many applications, such as voice user interfaces.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=TksaY_FDgnk
+
+   1. openai/whisper-large-v3
+      → A powerful ASR model by OpenAI.
+   2. facebook/w2v-bert-2.0
+      → A good generic speech model by MetaAI for fine-tuning.
+   3. facebook/seamless-m4t-v2-large
+      → An end-to-end model that performs ASR and Speech Translation by MetaAI.
+   4. nvidia/canary-1b
+      → A powerful multilingual ASR and Speech Translation model by Nvidia.
+   5. pyannote/speaker-diarization-3.1
+      → Powerful speaker diarization model.
+
+📋 Text-to-Speech (5 models)
+    SUMMARY: Text-to-Speech (TTS) is the task of generating natural sounding speech given text input. TTS models can be extended to have a single model that generates speech for multiple speakers and multiple languages.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=NW62DpzJ274
+
+   1. parler-tts/parler-tts-large-v1
+      → A prompt based, powerful TTS model.
+   2. SWivid/F5-TTS
+      → A powerful TTS model that supports English and Chinese.
+   3. fishaudio/fish-speech-1.5
+      → A massively multi-lingual TTS model.
+   4. OuteAI/OuteTTS-0.1-350M
+      → A powerful TTS model.
+   5. hexgrad/Kokoro-82M
+      → Small yet powerful TTS model.
+
+
+🗂️  COMPUTER VISION - 70 Models
+============================================================
+
+📋 Depth Estimation (4 models)
+    SUMMARY: Depth estimation is the task of predicting depth of the objects present in an image.
+    📺 YOUTUBE: No video available
+
+   1. depth-anything/Depth-Anything-V2-Large
+      → Cutting-edge depth estimation model.
+   2. jingheya/lotus-depth-g-v1-0
+      → A strong monocular depth estimation model.
+   3. tencent/DepthCrafter
+      → A depth estimation model that predicts depth in videos.
+   4. apple/DepthPro-hf
+      → A robust depth estimation model.
+
+📋 Image Classification (3 models)
+    SUMMARY: Image classification is the task of assigning a label or class to an entire image. Images are expected to have only one class for each image. Image classification models take an image as input and return a prediction about which class the image belongs to.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=tjAIM7BOYhw
+
+   1. google/vit-base-patch16-224
+      → A strong image classification model.
+   2. facebook/deit-base-distilled-patch16-224
+      → A robust image classification model.
+   3. facebook/convnext-large-224
+      → A strong image classification model.
+
+📋 Image Feature Extraction (5 models)
+    SUMMARY: Image feature extraction is the task of extracting features learnt in a computer vision model.
+    📺 YOUTUBE: No video available
+
+   1. timm/vit_large_patch14_dinov2.lvd142m
+      → A powerful image feature extraction model.
+   2. nvidia/MambaVision-T-1K
+      → A strong image feature extraction model.
+   3. facebook/dino-vitb16
+      → A robust image feature extraction model.
+   4. apple/aimv2-large-patch14-336-distilled
+      → Cutting-edge image feature extraction model.
+   5. OpenGVLab/InternViT-6B-448px-V1-2
+      → Strong image feature extraction model that can be used on images and documents.
+
+📋 Image Segmentation (5 models)
+    SUMMARY: Image Segmentation divides an image into segments where each pixel in the image is mapped to an object. This task has multiple variants such as instance segmentation, panoptic segmentation and semantic segmentation.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=dKE8SIt9C-w
+
+   1. openmmlab/upernet-convnext-small
+      → Solid semantic segmentation model trained on ADE20k.
+   2. briaai/RMBG-1.4
+      → Background removal model.
+   3. ZhengPeng7/BiRefNet
+      → A multipurpose image segmentation model for high resolution images.
+   4. facebook/sapiens-seg-1b
+      → Powerful human-centric image segmentation model.
+   5. facebook/mask2former-swin-large-coco-panoptic
+      → Panoptic segmentation model trained on the COCO (common objects) dataset.
+
+📋 Image-to-3D (4 models)
+    SUMMARY: Image-to-3D models take in image input and produce 3D output.
+    📺 YOUTUBE: No video available
+
+   1. TencentARC/InstantMesh
+      → Fast image-to-3D mesh model by Tencent.
+   2. stabilityai/TripoSR
+      → Fast image-to-3D mesh model by StabilityAI
+   3. hwjiang/Real3D
+      → A scaled up image-to-3D mesh model derived from TripoSR.
+   4. stabilityai/stable-point-aware-3d
+      → Consistent image-to-3d generation model.
+
+📋 Image-to-Image (6 models)
+    SUMMARY: Image-to-image is the task of transforming an input image through a variety of possible manipulations and enhancements, such as super-resolution, image inpainting, colorization, and more.
+    📺 YOUTUBE: No video available
+
+   1. fal/AuraSR-v2
+      → An image-to-image model to improve image resolution.
+   2. keras-io/super-resolution
+      → A model that increases the resolution of an image.
+   3. Yuanshi/OminiControl
+      → A model for applying edits to images through image controls.
+   4. mfidabel/controlnet-segment-anything
+      → A model that generates images based on segments in the input image and the text prompt.
+   5. black-forest-labs/FLUX.1-Fill-dev
+      → Strong model for inpainting and outpainting.
+   6. black-forest-labs/FLUX.1-Depth-dev-lora
+      → Strong model for image editing using depth maps.
+
+📋 Image-to-Text (4 models)
+    SUMMARY: Image to text models output a text from a given image. Image captioning or optical character recognition can be considered as the most common applications of image to text.
+    📺 YOUTUBE: No video available
+
+   1. Salesforce/blip2-opt-2.7b
+      → A robust image captioning model.
+   2. microsoft/kosmos-2-patch14-224
+      → A powerful and accurate image-to-text model that can also localize concepts in images.
+   3. facebook/nougat-base
+      → A strong optical character recognition model.
+   4. llava-hf/llava-1.5-7b-hf
+      → A powerful model that lets you have a conversation with the image.
+
+📋 Image-to-Video (8 models)
+    SUMMARY: Image-to-video models take a still image as input and generate a video. These models can be guided by text prompts to influence the content and style of the output video.
+    📺 YOUTUBE: No video available
+
+   1. Lightricks/LTX-Video-0.9.7-dev
+      → LTX-Video, a 13B parameter model for high quality video generation
+   2. Wan-AI/Wan2.1-VACE-14B
+      → A 14B parameter model for reference image controlled video generation
+   3. lllyasviel/FramePack_F1_I2V_HY_20250503
+      → An image-to-video generation model using FramePack F1 methodology with Hunyuan-DiT architecture
+   4. Lightricks/LTX-Video-0.9.7-distilled
+      → A distilled version of the LTX-Video-0.9.7-dev model for faster inference
+   5. Skywork/SkyReels-V2-I2V-14B-720P
+      → An image-to-video generation model by Skywork AI, 14B parameters, producing 720p videos.
+   6. tencent/HunyuanVideo-I2V
+      → Image-to-video variant of Tencent's HunyuanVideo.
+   7. Wan-AI/Wan2.1-I2V-14B-720P
+      → A 14B parameter model for 720p image-to-video generation by Wan-AI.
+   8. Wan-AI/Wan2.1-I2V-14B-720P-Diffusers
+      → A Diffusers version of the Wan2.1-I2V-14B-720P model for 720p image-to-video generation.
+
+📋 Keypoint Detection (4 models)
+    SUMMARY: Keypoint detection is the task of identifying meaningful distinctive points or features in an image.
+    📺 YOUTUBE: No video available
+
+   1. magic-leap-community/superpoint
+      → A robust keypoint detection model.
+   2. magic-leap-community/superglue_outdoor
+      → A robust keypoint matching model.
+   3. facebook/sapiens-pose-1b
+      → Strong keypoint detection model used to detect human pose.
+   4. usyd-community/vitpose-plus-base
+      → Powerful keypoint detection model used to detect human pose.
+
+📋 Mask Generation (2 models)
+    SUMMARY: Mask generation is the task of generating masks that identify a specific object or region of interest in a given image. Masks are often used in segmentation tasks, where they provide a precise way to isolate the object of interest for further processing or analysis.
+    📺 YOUTUBE: No video available
+
+   1. Zigeng/SlimSAM-uniform-50
+      → Small yet powerful mask generation model.
+   2. facebook/sam2-hiera-large
+      → Very strong mask generation model.
+
+📋 Object Detection (4 models)
+    SUMMARY: Object Detection models allow users to identify objects of certain defined classes. Object detection models receive an image as input and output the images with bounding boxes and labels on detected objects.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=WdAeKSOpxhw
+
+   1. facebook/detr-resnet-50
+      → Solid object detection model pre-trained on the COCO 2017 dataset.
+   2. IDEA-Research/dab-detr-resnet-50
+      → Accurate object detection model.
+   3. PekingU/rtdetr_v2_r50vd
+      → Fast and accurate object detection model.
+   4. StephanST/WALDO30
+      → Object detection model for low-lying objects.
+
+📋 Text-to-3D (2 models)
+    SUMMARY: Text-to-3D models take in text input and produce 3D output.
+    📺 YOUTUBE: No video available
+
+   1. openai/shap-e
+      → Text-to-3D mesh model by OpenAI
+   2. ashawkey/LGM
+      → Generative 3D gaussian splatting model.
+
+📋 Text-to-Image (4 models)
+    SUMMARY: Text-to-image is the task of generating images from input text. These pipelines can also be used to modify and edit images based on text prompts.
+    📺 YOUTUBE: No video available
+
+   1. black-forest-labs/FLUX.1-dev
+      → One of the most powerful image generation models that can generate realistic outputs.
+   2. latent-consistency/lcm-lora-sdxl
+      → A powerful yet fast image generation model.
+   3. Kwai-Kolors/Kolors
+      → Text-to-image model for photorealistic generation.
+   4. stabilityai/stable-diffusion-3-medium-diffusers
+      → A powerful text-to-image model.
+
+📋 Text-to-Video (4 models)
+    SUMMARY: Text-to-video models can be used in any application that requires generating consistent sequence of images from text. 
+    📺 YOUTUBE: No video available
+
+   1. tencent/HunyuanVideo
+      → A strong model for consistent video generation.
+   2. Lightricks/LTX-Video
+      → A text-to-video model with high fidelity motion and strong prompt adherence.
+   3. nvidia/Cosmos-1.0-Diffusion-7B-Text2World
+      → A text-to-video model focusing on physics-aware applications like robotics.
+   4. Wan-AI/Wan2.1-T2V-1.3B
+      → A robust model for video generation.
+
+📋 Unconditional Image Generation (2 models)
+    SUMMARY: Unconditional image generation is the task of generating images with no condition in any context (like a prompt text or another image). Once trained, the model will create images that resemble its training data distribution.
+    📺 YOUTUBE: No video available
+
+   1. google/ddpm-cifar10-32
+      → High-quality image generation model trained on the CIFAR-10 dataset. It synthesizes images of the ten classes presented in the dataset using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics.
+   2. google/ddpm-celebahq-256
+      → High-quality image generation model trained on the 256x256 CelebA-HQ dataset. It synthesizes images of faces using diffusion probabilistic models, a class of latent variable models inspired by considerations from nonequilibrium thermodynamics.
+
+📋 Video Classification (2 models)
+    SUMMARY: Video classification is the task of assigning a label or class to an entire video. Videos are expected to have only one class for each video. Video classification models take a video as input and return a prediction about which class the video belongs to.
+    📺 YOUTUBE: No video available
+
+   1. google/vivit-b-16x2-kinetics400
+      → Strong Video Classification model trained on the Kinetics 400 dataset.
+   2. microsoft/xclip-base-patch32
+      → Strong Video Classification model trained on the Kinetics 400 dataset.
+
+📋 Zero-Shot Image Classification (5 models)
+    SUMMARY: Zero-shot image classification is the task of classifying previously unseen classes during training of a model.
+    📺 YOUTUBE: No video available
+
+   1. visheratin/mexma-siglip
+      → Multilingual image classification model for 80 languages.
+   2. google/siglip2-base-patch16-224
+      → Strong zero-shot image classification model.
+   3. intfloat/mmE5-mllama-11b-instruct
+      → Robust zero-shot image classification model.
+   4. jinaai/jina-clip-v2
+      → Powerful zero-shot image classification model supporting 94 languages.
+   5. microsoft/BiomedCLIP-PubMedBERT_256-vit_base_patch16_224
+      → Strong image classification model for biomedical domain.
+
+📋 Zero-Shot Object Detection (2 models)
+    SUMMARY: Zero-shot object detection is a computer vision task to detect objects and their classes in images, without any prior training or knowledge of the classes. Zero-shot object detection models receive an image as input, as well as a list of candidate classes, and output the bounding boxes and labels where the objects have been detected.
+    📺 YOUTUBE: No video available
+
+   1. IDEA-Research/grounding-dino-base
+      → Solid zero-shot object detection model.
+   2. google/owlv2-base-patch16-ensemble
+      → Cutting-edge zero-shot object detection model.
+
+
+🗂️  MULTIMODAL - 24 Models
+============================================================
+
+📋 Any-to-Any (4 models)
+    SUMMARY: Any-to-any models can understand two or more modalities and output two or more modalities.
+    📺 YOUTUBE: No video available
+
+   1. Qwen/Qwen2.5-Omni-7B
+      → Strong model that can take in video, audio, image, text and output text and natural speech.
+   2. deepseek-ai/Janus-Pro-7B
+      → Robust model that can take in image and text and generate image and text.
+   3. openbmb/MiniCPM-o-2_6
+      → Any-to-any model with speech, video, audio, image and text understanding capabilities.
+   4. EPFL-VILAB/4M-21_XL
+      → A model that can understand image and text and generate image and text.
+
+📋 Document Question Answering (4 models)
+    SUMMARY: Document Question Answering (also known as Document Visual Question Answering) is the task of answering questions on document images. Document question answering models take a (document, question) pair as input and return an answer in natural language. Models usually rely on multi-modal features, combining text, position of words (bounding-boxes) and image.
+    📺 YOUTUBE: No video available
+
+   1. impira/layoutlm-document-qa
+      → A robust document question answering model.
+   2. impira/layoutlm-invoices
+      → A document question answering model specialized in invoices.
+   3. microsoft/udop-large
+      → A special model for OCR-free document question answering.
+   4. google/pix2struct-docvqa-large
+      → A powerful model for document question answering.
+
+📋 Image-Text-to-Text (8 models)
+    SUMMARY: Image-text-to-text models take in an image and text prompt and output text. These models are also called vision-language models, or VLMs. The difference from image-to-text models is that these models take an additional text input, not restricting the model to certain use cases like image captioning, and may also be trained to accept a conversation as input.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=IoGaGfU1CIg
+
+   1. HuggingFaceTB/SmolVLM-Instruct
+      → Small and efficient yet powerful vision language model.
+   2. microsoft/OmniParser-v2.0
+      → A screenshot understanding model used to control computers.
+   3. allenai/Molmo-7B-D-0924
+      → Cutting-edge vision language model.
+   4. vikhyatk/moondream2
+      → Small yet powerful model.
+   5. Qwen/Qwen2.5-VL-7B-Instruct
+      → Strong image-text-to-text model.
+   6. microsoft/Magma-8B
+      → Image-text-to-text model with agentic capabilities.
+   7. allenai/olmOCR-7B-0225-preview
+      → Strong image-text-to-text model focused on documents.
+   8. ibm-granite/granite-vision-3.2-2b
+      → Small yet strong image-text-to-text model.
+
+📋 Video-Text-to-Text (3 models)
+    SUMMARY: Video-text-to-text models take in a video and a text prompt and output text. These models are also called video-language models.
+    📺 YOUTUBE: No video available
+
+   1. Vision-CAIR/LongVU_Qwen2_7B
+      → A robust video-text-to-text model.
+   2. GoodiesHere/Apollo-LMMs-Apollo-7B-t32
+      → Strong video-text-to-text model with reasoning capabilities.
+   3. HuggingFaceTB/SmolVLM2-2.2B-Instruct
+      → Strong video-text-to-text model.
+
+📋 Visual Document Retrieval (2 models)
+    SUMMARY: Visual document retrieval is the task of searching for relevant image-based documents, such as PDFs. These models take a text query and multiple documents as input and return the top-most relevant documents and relevancy scores as output.
+    📺 YOUTUBE: No video available
+
+   1. vidore/colqwen2-v1.0
+      → Very accurate visual document retrieval model for multilingual queries and documents.
+   2. marco/mcdse-2b-v1
+      → Very fast and efficient visual document retrieval model that works on five languages.
+
+📋 Visual Question Answering (3 models)
+    SUMMARY: Visual Question Answering is the task of answering open-ended questions based on an image. They output natural language responses to natural language questions.
+    📺 YOUTUBE: No video available
+
+   1. google/deplot
+      → A visual question answering model trained to convert charts and plots to text.
+   2. google/matcha-base
+      → A visual question answering model trained for mathematical reasoning and chart derendering from images.
+   3. google/pix2struct-ocrvqa-large
+      → A strong visual question answering that answers questions from book covers.
+
+
+🗂️  NATURAL LANGUAGE PROCESSING - 39 Models
+============================================================
+
+📋 Feature Extraction (2 models)
+    SUMMARY: Feature extraction is the task of extracting features learnt in a model.
+    📺 YOUTUBE: No video available
+
+   1. thenlper/gte-large
+      → A powerful feature extraction model for natural language processing tasks.
+   2. Alibaba-NLP/gte-Qwen1.5-7B-instruct
+      → A strong feature extraction model for retrieval.
+
+📋 Fill-Mask (2 models)
+    SUMMARY: Masked language modeling is the task of masking some of the words in a sentence and predicting which words should replace those masks. These models are useful when we want to get a statistical understanding of the language in which the model is trained in.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=mqElG5QJWUg
+
+   1. answerdotai/ModernBERT-large
+      → State-of-the-art masked language model.
+   2. FacebookAI/xlm-roberta-base
+      → A multilingual model trained on 100 languages.
+
+📋 Question Answering (3 models)
+    SUMMARY: Question Answering models can retrieve the answer to a question from a given text, which is useful for searching for an answer in a document. Some question answering models can generate answers without context!
+    📺 YOUTUBE: https://www.youtube.com/watch?v=ajPx5LwJD-I
+
+   1. deepset/roberta-base-squad2
+      → A robust baseline model for most question answering domains.
+   2. distilbert/distilbert-base-cased-distilled-squad
+      → Small yet robust model that can answer questions.
+   3. google/tapas-base-finetuned-wtq
+      → A special model that can answer questions from tables.
+
+📋 Sentence Similarity (3 models)
+    SUMMARY: Sentence Similarity is the task of determining how similar two texts are. Sentence similarity models convert input texts into vectors (embeddings) that capture semantic information and calculate how close (similar) they are between them. This task is particularly useful for information retrieval and clustering/grouping.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=VCZq5AkbNEU
+
+   1. sentence-transformers/all-mpnet-base-v2
+      → This model works well for sentences and paragraphs and can be used for clustering/grouping and semantic searches.
+   2. BAAI/bge-m3
+      → A multilingual robust sentence similarity model.
+   3. HIT-TMG/KaLM-embedding-multilingual-mini-instruct-v1.5
+      → A robust sentence similarity model.
+
+📋 Summarization (2 models)
+    SUMMARY: Summarization is the task of producing a shorter version of a document while preserving its important information. Some models can extract text from the original input, while other models can generate entirely new text.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=yHnr5Dk2zCI
+
+   1. facebook/bart-large-cnn
+      → A strong summarization model trained on English news articles. Excels at generating factual summaries.
+   2. Falconsai/medical_summarization
+      → A summarization model trained on medical articles.
+
+📋 Table Question Answering (2 models)
+    SUMMARY: Table Question Answering (Table QA) is the answering a question about an information on a given table.
+    📺 YOUTUBE: No video available
+
+   1. microsoft/tapex-base
+      → A table question answering model that is capable of neural SQL execution, i.e., employ TAPEX to execute a SQL query on a given table.
+   2. google/tapas-base-finetuned-wtq
+      → A robust table question answering model.
+
+📋 Text Classification (5 models)
+    SUMMARY: Text Classification is the task of assigning a label or class to a given text. Some use cases are sentiment analysis, natural language inference, and assessing grammatical correctness.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=leNG9fN9FQU
+
+   1. distilbert/distilbert-base-uncased-finetuned-sst-2-english
+      → A robust model trained for sentiment analysis.
+   2. ProsusAI/finbert
+      → A sentiment analysis model specialized in financial sentiment.
+   3. cardiffnlp/twitter-roberta-base-sentiment-latest
+      → A sentiment analysis model specialized in analyzing tweets.
+   4. papluca/xlm-roberta-base-language-detection
+      → A model that can classify languages.
+   5. meta-llama/Prompt-Guard-86M
+      → A model that can classify text generation attacks.
+
+📋 Text Generation (8 models)
+    SUMMARY: Generating text is the task of generating new text given another text. These models can, for example, fill in incomplete text or paraphrase.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=e9gNEAlsOvU
+
+   1. google/gemma-2-2b-it
+      → A text-generation model trained to follow instructions.
+   2. deepseek-ai/DeepSeek-R1-Distill-Qwen-1.5B
+      → Smaller variant of one of the most powerful models.
+   3. meta-llama/Meta-Llama-3.1-8B-Instruct
+      → Very powerful text generation model trained to follow instructions.
+   4. microsoft/phi-4
+      → Powerful text generation model by Microsoft.
+   5. simplescaling/s1.1-32B
+      → A very powerful model with reasoning capabilities.
+   6. Qwen/Qwen2.5-7B-Instruct-1M
+      → Strong conversational model that supports very long instructions.
+   7. Qwen/Qwen2.5-Coder-32B-Instruct
+      → Text generation model used to write code.
+   8. deepseek-ai/DeepSeek-R1
+      → Powerful reasoning based open large language model.
+
+📋 Text Ranking (3 models)
+    SUMMARY: Text Ranking is the task of ranking a set of texts based on their relevance to a query. Text ranking models are trained on large datasets of queries and relevant documents to learn how to rank documents based on their relevance to the query. This task is particularly useful for search engines and information retrieval systems.
+    📺 YOUTUBE: No video available
+
+   1. cross-encoder/ms-marco-MiniLM-L6-v2
+      → An extremely efficient text ranking model trained on a web search dataset.
+   2. Alibaba-NLP/gte-multilingual-reranker-base
+      → A strong multilingual text reranker model.
+   3. Alibaba-NLP/gte-reranker-modernbert-base
+      → An efficient text ranking model that punches above its weight.
+
+📋 Token Classification (4 models)
+    SUMMARY: Token classification is a natural language understanding task in which a label is assigned to some tokens in a text. Some popular token classification subtasks are Named Entity Recognition (NER) and Part-of-Speech (PoS) tagging. NER models could be trained to identify specific entities in a text, such as dates, individuals and places; and PoS tagging would identify, for example, which words in a text are verbs, nouns, and punctuation marks.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=wVHdVlPScxA
+
+   1. dslim/bert-base-NER
+      → A robust performance model to identify people, locations, organizations and names of miscellaneous entities.
+   2. FacebookAI/xlm-roberta-large-finetuned-conll03-english
+      → A strong model to identify people, locations, organizations and names in multiple languages.
+   3. blaze999/Medical-NER
+      → A token classification model specialized on medical entity recognition.
+   4. flair/ner-english
+      → Flair models are typically the state of the art in named entity recognition tasks.
+
+📋 Translation (2 models)
+    SUMMARY: Translation is the task of converting text from one language to another.
+    📺 YOUTUBE: https://www.youtube.com/watch?v=1JvfrvZgi6c
+
+   1. facebook/nllb-200-1.3B
+      → Very powerful model that can translate many languages between each other, especially low-resource languages.
+   2. google-t5/t5-base
+      → A general-purpose Transformer that can be used to translate from English to German, French, or Romanian.
+
+📋 Zero-Shot Classification (3 models)
+    SUMMARY: Zero-shot text classification is a task in natural language processing where a model is trained on a set of labeled examples but is then able to classify new examples from previously unseen classes.
+    📺 YOUTUBE: No video available
+
+   1. facebook/bart-large-mnli
+      → Powerful zero-shot text classification model.
+   2. MoritzLaurer/ModernBERT-large-zeroshot-v2.0
+      → Cutting-edge zero-shot multilingual text classification model.
+   3. knowledgator/gliclass-modern-base-v2.0-init
+      → Zero-shot text classification model that can be used for topic and sentiment classification.
+
+
+🗂️  REINFORCEMENT LEARNING - 2 Models
+============================================================
+
+📋 Reinforcement Learning (2 models)
+    SUMMARY: Reinforcement learning is the computational approach of learning from action by interacting with an environment through trial and error and receiving rewards (negative or positive) as feedback
+    📺 YOUTUBE: https://www.youtube.com/watch?v=q0BiUn5LiBc
+
+   1. edbeeching/decision-transformer-gym-hopper-expert
+      → A Reinforcement Learning model trained on expert data from the Gym Hopper environment
+   2. HumanCompatibleAI/ppo-seals-CartPole-v0
+      → A PPO agent playing seals/CartPole-v0 using the stable-baselines3 library and the RL Zoo.
+
+
+🗂️  TABULAR - 2 Models
+============================================================
+
+📋 Tabular Classification (1 models)
+    SUMMARY: Tabular classification is the task of classifying a target category (a group) based on set of attributes.
+    📺 YOUTUBE: No video available
+
+   1. scikit-learn/cancer-prediction-trees
+      → Breast cancer prediction model based on decision trees.
+
+📋 Tabular Regression (1 models)
+    SUMMARY: Tabular regression is the task of predicting a numerical value given a set of attributes.
+    📺 YOUTUBE: No video available
+
+   1. scikit-learn/Fish-Weight
+      → Fish weight prediction based on length measurements and species.
+
+

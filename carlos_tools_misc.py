@@ -2,16 +2,13 @@ import time
 from typing import Any
 import os
 
-def function_timer(func, desc, *args, **kwargs):
-    '''This function times the execution of the function passed as an argument and writes the time taken to a file called results.txt'''
+def function_timer(func, *args, **kwargs):
+    '''This function times the execution of the function passed as an argument and prints the time taken '''
     start_time:float = time.time()
     result: Any = func(*args, **kwargs)
     end_time: float = time.time()
-    text: str = f"{desc} - Time taken by {func.__name__}: {end_time - start_time} seconds"
-    print(text)
-    with open("results.txt","a") as f:
-        f.write(text+"\n")
-    return result
+    duration: float = end_time - start_time
+    return duration, result
 
 
 def save_text_to_file(text: str, directory: str, file_name: str) -> None:
@@ -23,7 +20,7 @@ def save_text_to_file(text: str, directory: str, file_name: str) -> None:
     file_path: str = os.path.join(directory, file_name)
     with open(file_path, "w") as text_file:
         text_file.write(text)
-
+    return file_path
 
 def get_file_name(counter: int, suffix: str) -> tuple:
     """Get the path to a file and update the counter."""

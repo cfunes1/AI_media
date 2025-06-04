@@ -1,4 +1,5 @@
 from openai import OpenAI
+from openai.types.audio import Transcription, TranscriptionVerbose, Translation, TranslationVerbose
 import whisper
 from faster_whisper import WhisperModel
 from elevenlabs.client import ElevenLabs
@@ -7,7 +8,7 @@ from elevenlabs.client import ElevenLabs
 import subprocess
 import pygame
 from time import sleep
-from typing import Literal
+from typing import Literal, Union
 from carlos_tools_misc import get_file_path
 from pydub import AudioSegment
 import torch
@@ -74,7 +75,7 @@ def text_to_speech(text: str, directory: str, file_name: str, speed: float = 1.0
 def text_to_speech_elevenlabs(text: str, directory: str, file_name: str) -> None:
     """Convert text to speech using Eleven Labs' library."""
     if text == "":
-        raise ValueError("Text cannot be empty")
+        raise ValueError("Text cannot be empty")             
     l = len(text)
     if l> 5000:
         raise ValueError(f"Text length ({l}) too long for Eleven Labs")
@@ -105,100 +106,294 @@ def wait_for_audio_to_finish() -> None:
         sleep(10)
 
 
-def local_detect_language(directory: str, file_name: str,device: str ="cuda"):
-    """Detect language of an audio file using OpenAI's library."""
-    file_path: str = get_file_path(directory, file_name)
-    model = whisper.load_model("base", device=device)
+def local_detect_language(
+    file_path: str,
+) -> dict:
+    """Detect language of an audio file using OpenAI's Whisper library."""
+    model = whisper.load_model("base") 
     audio = whisper.load_audio(file_path)
     audio = whisper.pad_or_trim(audio)
+
+    # make log-Mel spectrogram and move to the same device as the model
     mel = whisper.log_mel_spectrogram(audio).to(model.device)
     _, probs = model.detect_language(mel)
-    return max(probs, key=probs.get)
+    
+    detected_language = max(probs, key=probs.get)
+    confidence = probs[detected_language]
+    
+    return {
+        "language": detected_language,
+        "probability": confidence,
+        "all_probabilities": probs
+    }
 
-
-def local_faster_whisper(
-        directory: str, 
-        file_name: str, 
-        task: Literal["transcribe", "translate"] = "transcribe",
+def local_whisper_transcribe(
+        file_path: str,
+        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large'] = "large-v3", 
+        device: Literal["cuda", "cpu", "auto"] = "cuda",
+        verbose: bool = True,
+        prompt: str = None,
         language: str = None,
+    ):
+    """Converts speech to text using local original whisper model."""
+    # check if cuda is available
+    if device == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA not available")
+    print(f"Running whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {verbose=}\n {prompt=}\n {language=}\n")
+    model = whisper.load_model(
+        name=model_size, 
+        device=device,        
+        )
+    transcription =  model.transcribe(
+        audio = file_path,
+        verbose = verbose, 
+        initial_prompt=prompt,
+        language=language,
+        task="transcribe",
+        )
+    text: str = transcription["text"]
+    language: str = transcription["language"]
+
+    return {
+        "text":text,
+        "language":language, 
+        "transcription":transcription
+        }
+
+def local_whisper_translate(
+        file_path: str,
+        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large'] = "large-v3", 
+        device: Literal["cuda", "cpu", "auto"] = "cuda",
+        verbose: bool = True,
+        prompt: str = None,
+        language: str = None,
+    ):
+    """Converts speech to text using local original whisper model."""
+    # check if cuda is available
+    if device == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA not available")
+    print(f"Running whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {verbose=}\n {prompt=}\n {language=}\n")
+    model = whisper.load_model(
+        name=model_size, 
+        device=device,        
+        )
+    translation =  model.transcribe(
+        audio = file_path,
+        verbose = verbose, 
+        initial_prompt=prompt,
+        language=language,
+        task="translate",  
+        )
+    text: str = translation["text"]
+    language: str = translation["language"]
+
+    return {
+        "text":text,
+        "language":language, 
+        "translation":translation
+        }
+
+
+def local_faster_whisper_transcribe(
+        file_path: str, 
         model_size: Literal["large-v3", "distil-large-v3"] = "distil-large-v3", 
         device: Literal["cuda", "cpu", "auto"] = "cuda",
-        compute_type: Literal["float16", "int8"] = "float16"
+        compute_type: Literal["float16", "int8"] = "float16",
+        language: str = None,
+        prompt: str = None,
         ):
     """Converts speech to text using local faster whisper model.""" 
     # check if cuda is available
     # device: Literal["cuda", "cpu"]
     if device == "cuda" and not torch.cuda.is_available():
         raise ValueError("CUDA not available")
-    print(f"Running faster whisper model locally. \n{directory=}\n {file_name=}\n {task=}\n {language=}\n {model_size=}\n {device=}\n {compute_type=}")
-    model = WhisperModel(model_size, device=device, compute_type=compute_type)
-    file_path: str = get_file_path(directory, file_name)
-    segments, info = model.transcribe(file_path, language=language, beam_size=5, task=task)
+    print(f"Running faster whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {compute_type=}\n {language=}\n {prompt=}\n")
+    model = WhisperModel(
+        model_size_or_path=model_size, 
+        device=device, 
+        compute_type=compute_type)
+    segments, info = model.transcribe(
+        audio=file_path, 
+        language=language, 
+        task="transcribe",
+        initial_prompt=prompt,
+        )
+    
     collected_segments: list = []
+    segment_objects: list = []  # Store actual segment objects
+    
     for segment in segments:
         collected_segments.append(segment.text)
-        print("[%.2fs -> %.2fs] %s" % (segment.start, segment.end, segment.text))
+        # Store segment data as dict to preserve it
+        segment_objects.append({
+            'start': segment.start,
+            'end': segment.end,
+            'text': segment.text
+        })
+        # print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
+    
     text = "".join(collected_segments)
     detected_language: str = info.language
-    print("Detected language '%s' with probability %f" % (info.language, info.language_probability))
-    return {"text":text,"language":detected_language}
+    print(f"Detected language {info.language} with probability {info.language_probability}")
+    
+    return {
+        "text": text,
+        "language": detected_language,
+        "transcription": {
+            "segments": segment_objects,  # Return list of dicts instead of consumed iterator
+            "info": info
+        }
+    }
 
 
-def local_whisper(
-        directory: str, 
-        file_name: str, 
-        task: Literal["transcribe", "translate"] = "transcribe",
-        language: str = None,
-        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large'] = "large-v3", 
+def local_faster_whisper_translate(
+        file_path: str, 
+        model_size: Literal["large-v3", "distil-large-v3"] = "distil-large-v3", 
         device: Literal["cuda", "cpu", "auto"] = "cuda",
-):
-    """Converts speech to text using local original whisper model."""
+        compute_type: Literal["float16", "int8"] = "float16",
+        language: str = None,
+        prompt: str = None,
+        ):
+    """Converts speech to text using local faster whisper model.""" 
     # check if cuda is available
+    # device: Literal["cuda", "cpu"]
     if device == "cuda" and not torch.cuda.is_available():
         raise ValueError("CUDA not available")
-    print(f"Running original whisper model locally. \n {directory=}\n {file_name=}\n {task=}\n {language=}\n {model_size=}\n {device=}\n ")
-    file_path: str = get_file_path(directory, file_name)
-    model = whisper.load_model(model_size, device=device)
+    print(f"Running faster whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {compute_type=}\n {language=}\n {prompt=}\n")
+    model = WhisperModel(
+        model_size_or_path=model_size, 
+        device=device, 
+        compute_type=compute_type)
+    segments, info = model.transcribe(
+        audio=file_path, 
+        language=language, 
+        task="translate",
+        initial_prompt=prompt,
+        )
     
-    text = model.transcribe(file_path, language = language, verbose = True, task = task)["text"]
-    detected_language: str = local_detect_language(directory=directory, file_name=file_name)  
-    print(f"Detected language {detected_language}")
-    return {"text":text,"language":detected_language}
+    collected_segments: list = []
+    segment_objects: list = []  # Store actual segment objects
+    
+    for segment in segments:
+        collected_segments.append(segment.text)
+        # Store segment data as dict to preserve it
+        segment_objects.append({
+            'start': segment.start,
+            'end': segment.end,
+            'text': segment.text
+        })
+        # print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
+    
+    text = "".join(collected_segments)
+    detected_language: str = info.language
+    print(f"Detected language {info.language} with probability {info.language_probability}")
+    
+    return {
+        "text": text,
+        "language": detected_language,
+        "translation": {
+            "segments": segment_objects,  # Return list of dicts instead of consumed iterator
+            "info": info
+        }
+    }
 
+def OpenAI_transcribe(
+    file_path: str, 
+    model: Literal["gpt-4o-mini-transcribe", "gpt-4o-transcribe", "whisper-1"], 
+    response_format: Literal["json", "text", "srt", "verbose_json", "vtt"] = "text",
+    language: str | None = None, 
+) -> dict[str, Union[str, Transcription, TranscriptionVerbose]]:
+    """
+    Transcribe audio using OpenAI's transcription models.
 
-def remote_whisper(
-        directory: str, 
-        file_name: str, 
-        task: Literal["transcribe", "translate"] = "transcribe",
-        language: str = None
-        ) -> dict:
-    """Convert speech to text using OpenAI's library."""
-    # remote/paid openai whisper model
-    file_path: str = get_file_path(directory, file_name)
-    audio_file = open(file_path, "rb")
-    # call OpenAI API
+    Parameters:
+        model (Literal): Model to use. Options: 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe', or 'whisper-1'.
+        file_path (str): Path to the audio file to be transcribed.
+        language (str, optional): Language of the audio. If None, OpenAI will attempt auto-detection.
+        response_format (Literal): Desired format of the transcription output. 
+            For GPT-4o models, valid options are 'json' and 'text'.
+            For Whisper-1, additional options include 'srt', 'verbose_json', and 'vtt'. Default is 'text'.
+
+    Returns:
+        Union[str, Transcription, TranscriptionVerbose]: 
+            - Returns a string if `response_format` is 'text', 'srt', or 'vtt'.
+            - Returns a `Transcription` object if `response_format` is 'json'.
+            - Returns a `TranscriptionVerbose` object if `response_format` is 'verbose_json'.
+    """
+    from openai import OpenAI
+    if model in ["gpt-4o-mini-transcribe", "gpt-4o-transcribe"] and response_format not in ["json", "text"]:
+        raise ValueError("For gpt-4o models, response_format must be 'json' or 'text'.")
+    
     client = OpenAI()
-    if task == "translate":
-        print(f"Running remote translation. ")
-        result = client.audio.translations.create(
-            model="whisper-1", 
+    with open(file_path, "rb") as audio_file:
+        transcription = client.audio.transcriptions.create(
             file=audio_file, 
-            response_format="verbose_json"
-        )
+            model=model, 
+            response_format=response_format,
+            language=language,
+        )    
+    if  isinstance(transcription, str):    
+        # If the transcription is a string, it is the text itself
+        text = transcription
+        language = "unknown"    
     else:
-        print(f"Running remote transcription. Language {language}")
-        result = client.audio.transcriptions.create(
-            model="whisper-1", 
+        # If the transcription is an object, extract text and language attributes
+        text=transcription.text
+        language = getattr(transcription, 'language', 'unknown')
+    
+    return {
+        "text":text, 
+        "language":language,
+        "transcription":transcription
+        }
+
+def OpenAI_translate(
+    file_path: str, 
+    model: Literal["gpt-4o-mini-transcribe", "gpt-4o-transcribe", "whisper-1"], 
+    response_format: Literal["json", "text", "srt", "verbose_json", "vtt"] = "text",
+    language: str | None = None, 
+) -> dict[str, Union[str, Translation, TranslationVerbose]]:
+    """
+    Translate audio using OpenAI's translation models.
+
+    Parameters:
+        model (Literal): Model to use. Options: 'whisper-1'.
+        file_path (str): Path to the audio file to be transcribed.
+        language (str, optional): Language of the audio. If None, OpenAI will attempt auto-detection.
+        response_format (Literal): Desired format of the translation output. 'json', 'text', 'srt', 'verbose_json', and 'vtt'. Default is 'text'.
+
+    Returns:
+        Union[str, Translation, TranslationVerbose]: 
+            - Returns a string if `response_format` is 'text', 'srt', or 'vtt'.
+            - Returns a `Translation` object if `response_format` is 'json'.
+            - Returns a `TranslationVerbose` object if `response_format` is 'verbose_json'.
+    """
+    from openai import OpenAI
+    if model != "whisper-1":
+        raise ValueError("Only model available for translation is 'whisper-1'.")
+    
+    client = OpenAI()
+    with open(file_path, "rb") as audio_file:
+        translation = client.audio.translations.create(
             file=audio_file, 
-            language = language, 
-            response_format="verbose_json"
-        )
-    text = result.text
-    detected_language = result.language
-    print(f"Detected language {detected_language}")
-    if detected_language == None or text == None:
-        raise ValueError("No language or text detected")
-    return {"text":text,"language":detected_language}
+            model=model, 
+            response_format=response_format,
+        )    
+    if  isinstance(translation, str):    
+        # If the transcription is a string, it is the text itself
+        text = translation
+        language = "unknown"    
+    else:
+        # If the transcription is an object, extract text and language attributes
+        text=translation.text
+        language = getattr(translation, 'language', 'unknown') # always "en" for translations, when available
+    
+    return {
+        "text":text, 
+        "language":language,
+        "translation":translation
+        }
+
 
 
 def increase_volume(directory:str, input_file, output_file, db_increase):
