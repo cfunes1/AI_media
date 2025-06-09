@@ -2,6 +2,17 @@ import time
 from typing import Any
 import os
 
+def clear_GPU_cache() -> None:
+    """Clear the GPU cache."""
+    try:
+        import torch
+        torch.cuda.empty_cache()
+        print("GPU cache cleared.")
+    except ImportError:
+        print("torch module not found. Cannot clear GPU cache.")
+    except Exception as e:
+        print(f"An error occurred while clearing GPU cache: {e}")
+
 def function_timer(func, *args, **kwargs):
     '''This function times the execution of the function passed as an argument and prints the time taken '''
     start_time:float = time.time()

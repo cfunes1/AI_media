@@ -27,5 +27,7 @@ pyperclip
 gradio
 streamlit
 flask
-matplotlib
 numpy
+matplotlib
+scipy
+# chatterbox-tts

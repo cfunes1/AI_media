@@ -12,6 +12,7 @@ from typing import Literal, Union
 from carlos_tools_misc import get_file_path
 from pydub import AudioSegment
 import torch
+import time
 import os
 
 
@@ -144,6 +145,7 @@ def local_whisper_transcribe(
         name=model_size, 
         device=device,        
         )
+    start = time.time()  # <-- Start timing after model is loaded
     transcription =  model.transcribe(
         audio = file_path,
         verbose = verbose, 
@@ -151,13 +153,15 @@ def local_whisper_transcribe(
         language=language,
         task="transcribe",
         )
+    inference_time = time.time() - start  # <-- End timing after inference
     text: str = transcription["text"]
     language: str = transcription["language"]
 
     return {
         "text":text,
         "language":language, 
-        "transcription":transcription
+        "transcription":transcription,
+        "inference_time": inference_time  
         }
 
 def local_whisper_translate(
@@ -177,6 +181,7 @@ def local_whisper_translate(
         name=model_size, 
         device=device,        
         )
+    start = time.time()  # <-- Start timing after model is loaded
     translation =  model.transcribe(
         audio = file_path,
         verbose = verbose, 
@@ -184,13 +189,15 @@ def local_whisper_translate(
         language=language,
         task="translate",  
         )
+    inference_time = time.time() - start  # <-- End timing after inference
     text: str = translation["text"]
     language: str = translation["language"]
 
     return {
         "text":text,
         "language":language, 
-        "translation":translation
+        "translation":translation,
+        "inference_time": inference_time,
         }
 
 
@@ -212,13 +219,14 @@ def local_faster_whisper_transcribe(
         model_size_or_path=model_size, 
         device=device, 
         compute_type=compute_type)
+    start = time.time()  # <-- Start timing after model is loaded
     segments, info = model.transcribe(
         audio=file_path, 
         language=language, 
         task="transcribe",
         initial_prompt=prompt,
         )
-    
+    inference_time = time.time() - start  # <-- End timing after inference
     collected_segments: list = []
     segment_objects: list = []  # Store actual segment objects
     
@@ -242,7 +250,8 @@ def local_faster_whisper_transcribe(
         "transcription": {
             "segments": segment_objects,  # Return list of dicts instead of consumed iterator
             "info": info
-        }
+        },
+        "inference_time": inference_time,
     }
 
 
@@ -264,12 +273,14 @@ def local_faster_whisper_translate(
         model_size_or_path=model_size, 
         device=device, 
         compute_type=compute_type)
+    start = time.time()  # <-- Start timing after model is loaded
     segments, info = model.transcribe(
         audio=file_path, 
         language=language, 
         task="translate",
         initial_prompt=prompt,
         )
+    inference_time = time.time() - start  # <-- End timing after inference
     
     collected_segments: list = []
     segment_objects: list = []  # Store actual segment objects
@@ -294,7 +305,8 @@ def local_faster_whisper_translate(
         "translation": {
             "segments": segment_objects,  # Return list of dicts instead of consumed iterator
             "info": info
-        }
+        },
+        "inference_time": inference_time,
     }
 
 def OpenAI_transcribe(
@@ -325,6 +337,7 @@ def OpenAI_transcribe(
         raise ValueError("For gpt-4o models, response_format must be 'json' or 'text'.")
     
     client = OpenAI()
+    start= time.time()  # Start timing before the transcription request
     with open(file_path, "rb") as audio_file:
         transcription = client.audio.transcriptions.create(
             file=audio_file, 
@@ -332,6 +345,7 @@ def OpenAI_transcribe(
             response_format=response_format,
             language=language,
         )    
+    inference_time = time.time() - start  # End timing after the transcription request
     if  isinstance(transcription, str):    
         # If the transcription is a string, it is the text itself
         text = transcription
@@ -344,7 +358,8 @@ def OpenAI_transcribe(
     return {
         "text":text, 
         "language":language,
-        "transcription":transcription
+        "transcription":transcription,
+        "inference_time": inference_time
         }
 
 def OpenAI_translate(
@@ -373,12 +388,14 @@ def OpenAI_translate(
         raise ValueError("Only model available for translation is 'whisper-1'.")
     
     client = OpenAI()
+    start= time.time()  # Start timing before the transcription request
     with open(file_path, "rb") as audio_file:
         translation = client.audio.translations.create(
             file=audio_file, 
             model=model, 
             response_format=response_format,
         )    
+    inference_time = time.time() - start  # End timing after the transcription request
     if  isinstance(translation, str):    
         # If the transcription is a string, it is the text itself
         text = translation
@@ -391,7 +408,8 @@ def OpenAI_translate(
     return {
         "text":text, 
         "language":language,
-        "translation":translation
+        "translation":translation,
+        "inference_time": inference_time,
         }
 
 
