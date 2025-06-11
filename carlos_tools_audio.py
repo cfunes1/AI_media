@@ -130,7 +130,7 @@ def local_detect_language(
 
 def local_whisper_transcribe(
         file_path: str,
-        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large'] = "large-v3", 
+        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large', "large-v3-turbo","turbo"] = "large-v3", 
         device: Literal["cuda", "cpu", "auto"] = "cuda",
         verbose: bool = True,
         prompt: str = None,
@@ -166,7 +166,7 @@ def local_whisper_transcribe(
 
 def local_whisper_translate(
         file_path: str,
-        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large'] = "large-v3", 
+        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large', "large-v3-turbo","turbo"] = "large-v3", 
         device: Literal["cuda", "cpu", "auto"] = "cuda",
         verbose: bool = True,
         prompt: str = None,

@@ -2,7 +2,10 @@ openai
 openai-whisper
 faster_whisper
 pygame
+--index-url https://download.pytorch.org/whl/cu128
 torch
+torchvision
+torchaudio
 requests
 pillow
 pytube

@@ -47,6 +47,7 @@ credentials.json
 
 # Ignore any other project-specific files or directories
 /env/
+/venv/
 /__pycache__/
 /.mypy_cache/
 /.pytest_cache/
