@@ -3,15 +3,18 @@ from typing import Any
 import os
 
 def clear_GPU_cache() -> None:
-    """Clear the GPU cache."""
+    """Clear the GPU cache if available, otherwise print a warning."""
     try:
         import torch
-        torch.cuda.empty_cache()
-        print("GPU cache cleared.")
+        if torch.cuda.is_available():
+            torch.cuda.empty_cache()
+            print("GPU cache cleared.")
+        else:
+            print("No GPU available or CUDA not enabled. Cannot clear GPU cache.")
     except ImportError:
         print("torch module not found. Cannot clear GPU cache.")
     except Exception as e:
-        print(f"An error occurred while clearing GPU cache: {e}")
+        print(f"An error occurred while attempting to clear GPU cache: {e}")
 
 def function_timer(func, *args, **kwargs):
     '''This function times the execution of the function passed as an argument and prints the time taken '''

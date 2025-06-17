@@ -131,7 +131,7 @@ def local_detect_language(
 def local_whisper_transcribe(
         file_path: str,
         model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large', "large-v3-turbo","turbo"] = "large-v3", 
-        device: Literal["cuda", "cpu", "auto"] = "cuda",
+        device: Literal["cuda", "cpu", "auto"] = "auto",
         verbose: bool = True,
         prompt: str = None,
         language: str = None,
@@ -143,7 +143,7 @@ def local_whisper_transcribe(
     print(f"Running whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {verbose=}\n {prompt=}\n {language=}\n")
     model = whisper.load_model(
         name=model_size, 
-        device=device,        
+        device=device,
         )
     start = time.time()  # <-- Start timing after model is loaded
     transcription =  model.transcribe(
@@ -152,6 +152,7 @@ def local_whisper_transcribe(
         initial_prompt=prompt,
         language=language,
         task="transcribe",
+        beam_size=5, # matches faster-whisper default
         )
     inference_time = time.time() - start  # <-- End timing after inference
     text: str = transcription["text"]
@@ -167,7 +168,7 @@ def local_whisper_transcribe(
 def local_whisper_translate(
         file_path: str,
         model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large', "large-v3-turbo","turbo"] = "large-v3", 
-        device: Literal["cuda", "cpu", "auto"] = "cuda",
+        device: Literal["cuda", "cpu", "auto"] = "auto",
         verbose: bool = True,
         prompt: str = None,
         language: str = None,
@@ -179,7 +180,7 @@ def local_whisper_translate(
     print(f"Running whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {verbose=}\n {prompt=}\n {language=}\n")
     model = whisper.load_model(
         name=model_size, 
-        device=device,        
+        device=device,
         )
     start = time.time()  # <-- Start timing after model is loaded
     translation =  model.transcribe(
@@ -188,6 +189,7 @@ def local_whisper_translate(
         initial_prompt=prompt,
         language=language,
         task="translate",  
+        beam_size=5, # matches faster-whisper default
         )
     inference_time = time.time() - start  # <-- End timing after inference
     text: str = translation["text"]
@@ -203,9 +205,8 @@ def local_whisper_translate(
 
 def local_faster_whisper_transcribe(
         file_path: str, 
-        model_size: Literal["large-v3", "distil-large-v3"] = "distil-large-v3", 
-        device: Literal["cuda", "cpu", "auto"] = "cuda",
-        compute_type: Literal["float16", "int8"] = "float16",
+        model_size: Literal["large-v3", "distil-large-v3", "deepdml/faster-whisper-large-v3-turbo-ct2"] = "distil-large-v3", 
+        device: Literal["cuda", "cpu", "auto"] = "auto",
         language: str = None,
         prompt: str = None,
         ):
@@ -214,11 +215,12 @@ def local_faster_whisper_transcribe(
     # device: Literal["cuda", "cpu"]
     if device == "cuda" and not torch.cuda.is_available():
         raise ValueError("CUDA not available")
-    print(f"Running faster whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {compute_type=}\n {language=}\n {prompt=}\n")
+    print(f"Running faster whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {language=}\n {prompt=}\n")
     model = WhisperModel(
         model_size_or_path=model_size, 
         device=device, 
-        compute_type=compute_type)
+        compute_type="float16" if device == "cuda" else "int8",  # Use float16 for CUDA, int8 for CPU
+        )
     start = time.time()  # <-- Start timing after model is loaded
     segments, info = model.transcribe(
         audio=file_path, 
@@ -226,7 +228,6 @@ def local_faster_whisper_transcribe(
         task="transcribe",
         initial_prompt=prompt,
         )
-    inference_time = time.time() - start  # <-- End timing after inference
     collected_segments: list = []
     segment_objects: list = []  # Store actual segment objects
     
@@ -240,6 +241,7 @@ def local_faster_whisper_transcribe(
         })
         # print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
     
+    inference_time = time.time() - start  # <-- End timing after inference
     text = "".join(collected_segments)
     detected_language: str = info.language
     print(f"Detected language {info.language} with probability {info.language_probability}")
@@ -258,8 +260,7 @@ def local_faster_whisper_transcribe(
 def local_faster_whisper_translate(
         file_path: str, 
         model_size: Literal["large-v3", "distil-large-v3"] = "distil-large-v3", 
-        device: Literal["cuda", "cpu", "auto"] = "cuda",
-        compute_type: Literal["float16", "int8"] = "float16",
+        device: Literal["cuda", "cpu", "auto"] = "auto",
         language: str = None,
         prompt: str = None,
         ):
@@ -268,11 +269,12 @@ def local_faster_whisper_translate(
     # device: Literal["cuda", "cpu"]
     if device == "cuda" and not torch.cuda.is_available():
         raise ValueError("CUDA not available")
-    print(f"Running faster whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {compute_type=}\n {language=}\n {prompt=}\n")
+    print(f"Running faster whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {language=}\n {prompt=}\n")
     model = WhisperModel(
         model_size_or_path=model_size, 
         device=device, 
-        compute_type=compute_type)
+        compute_type="float16" if device == "cuda" else "int8",  # Use float16 for CUDA, int8 for CPU
+        )  # Use int8 for CPU to save memory and speed up inference
     start = time.time()  # <-- Start timing after model is loaded
     segments, info = model.transcribe(
         audio=file_path, 
@@ -280,7 +282,6 @@ def local_faster_whisper_translate(
         task="translate",
         initial_prompt=prompt,
         )
-    inference_time = time.time() - start  # <-- End timing after inference
     
     collected_segments: list = []
     segment_objects: list = []  # Store actual segment objects
@@ -295,6 +296,7 @@ def local_faster_whisper_translate(
         })
         # print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
     
+    inference_time = time.time() - start  # <-- End timing after inference
     text = "".join(collected_segments)
     detected_language: str = info.language
     print(f"Detected language {info.language} with probability {info.language_probability}")
