@@ -1,78 +1,6 @@
-import pytube
-from pydub import AudioSegment
-from pydub.utils import mediainfo
 from yt_dlp import YoutubeDL
 from youtube_transcript_api import YouTubeTranscriptApi
-from typing import Any
-from carlos_tools_misc import get_file_path
 import os
-
-
-def get_video(url: str) -> tuple:
-    """Get a youtube video object."""
-    try:
-        yt_object: pytube.YouTube = pytube.YouTube(
-            url,
-            on_progress_callback=on_progress,
-            on_complete_callback=on_complete,
-        )
-        yt_object.check_availability()
-    except:
-        raise FileNotFoundError("Video not found.")
-    yt_clean_title: str = yt_object.title.replace(" ","_").replace("/","_").replace("\\","_").replace(":","_").replace("*","_").replace("?","_").replace("\"","_").replace("<","_").replace(">","_").replace("|","_")
-    return yt_clean_title, yt_object
-
-
-def on_progress(stream, chunk, bytes_remaining) -> None:
-    """Print the download progress of the video."""
-    total_size: int = stream.filesize
-    bytes_downloaded: int = total_size - bytes_remaining
-    perc_completed: float = (bytes_downloaded / total_size) * 100
-    print(perc_completed, "% downloaded", end="\r")
-
-
-def on_complete(stream, file_path) -> None:
-    """Notifies of download completion."""
-    print("File fully downloaded at: ", file_path, "")
-
-
-def save_smallest_audio_stream(
-    yt_object: pytube.YouTube, directory: str, file_name: str
-) -> None:
-    """Finds and download the smallest audio stream available for a youtube video."""
-    filtered_streams = yt_object.streams.filter(
-        file_extension="mp4", only_audio=True
-    ).order_by("abr")
-    audio_stream: Any = filtered_streams.first()
-    download_full_path: str = audio_stream.download(output_path=directory, filename=file_name)
-
-
-def cut_file(directory: str, file_name: str, max_duration_secs: int) -> str | None:
-    """Reduce length of file to max duration if needed"""
-    file_path: str = get_file_path(directory, file_name)
-    current_duration_secs: float = float(mediainfo(file_path)["duration"])
-    needs_cut: bool = int(current_duration_secs) > max_duration_secs
-    if needs_cut:
-        base: str
-        extension: str
-        base, extension = os.path.splitext(file_name)
-        new_file_name : str = base + f"_first_{max_duration_secs}secs" + extension
-        output_path: str = get_file_path(directory, new_file_name)
-        print(
-            f"Original recording of {current_duration_secs} secs is too long. Cutting it to the first {max_duration_secs / 60} mins..."
-        )
-        try:
-            print(f"Loading original file: {file_path}...")
-            audio: AudioSegment = AudioSegment.from_file(file_path)
-            print(f"Creating new file: {output_path}...")
-            cut_file: AudioSegment = audio[
-                : max_duration_secs * 1000
-            ]  # duration in miliseconds
-            cut_file.export(output_path)
-        except FileNotFoundError:
-            raise FileNotFoundError("File audio file not found.")
-        return output_path
-    return None
 
 
 def download_video(url: str, directory: str | None = None, file_name: str | None = None) -> str:
@@ -85,7 +13,8 @@ def download_video(url: str, directory: str | None = None, file_name: str | None
     print(f"{file_path=}")
     # Define download options
     ydl_opts: dict = {
-        "outtmpl": file_path,  # Output template
+        "outtmpl": file_path,  # Output template,
+        # "format": "bv+ba/b"
     }
 
     # Download the video and capture the filename
@@ -97,7 +26,7 @@ def download_video(url: str, directory: str | None = None, file_name: str | None
     print("Video downloaded at:", filename)
     return filename
 
-def download_audio(url: str, directory: str | None = None, file_name: str | None = None) -> str:
+def download_audio(url: str, directory: str | None = None, file_name: str | None = None, keepvideo: bool = False) -> str:
     """Download the audio of a video """
     if directory is None:
         directory = os.getcwd()
@@ -109,14 +38,14 @@ def download_audio(url: str, directory: str | None = None, file_name: str | None
     ydl_opts: dict = {
         'format': 'bestaudio/best',       # Download the best audio format available
         "outtmpl": file_path,  # Output template     
-        'keepvideo': True,  # Keep the original file after conversion   
+        'keepvideo': keepvideo,  # Keep the original file after conversion   
         'postprocessors': [
         {
             'key': 'FFmpegExtractAudio',
             'preferredcodec': 'mp3',
             'preferredquality': '32',  # Bitrate in kbps
         }
-    ]
+        ]
     }
 
     # Download the video and capture the filename
@@ -140,17 +69,23 @@ def yt_transcript(url: str, directory: str | None = None, file_name: str | None 
     if directory is None:
         directory = os.getcwd()
     if file_name is None:
-        file_name = video_id+".txt"
+        file_name = "transcript_" + video_id + ".txt"
     file_path = os.path.join(directory, file_name)
     # get the transcript
-    transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    # transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    ytt_api = YouTubeTranscriptApi()
+    fetched_transcript = ytt_api.fetch(video_id)
+    if not fetched_transcript:
+        raise FileNotFoundError("Transcript not found for this video.")
+    
     # extract the transcript in text format
     text: str = ""
-    for sentence in transcript:
-        text += f"{sentence["start"]:10.1f}: {sentence["text"]}\n"
+    for snippet in fetched_transcript.snippets:
+        text += f"{snippet.start:10.1f}: {snippet.text}\n"
     # save transcript to file
     with open(file_path,"w") as f:
         f.write(text)
+    print(f"Transcript for video {video_id} downloaded to {file_path}")
     return text, file_path
 
 

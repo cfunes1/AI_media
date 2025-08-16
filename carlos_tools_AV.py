@@ -1,0 +1,597 @@
+from openai import OpenAI
+from openai.types.audio import Transcription, TranscriptionVerbose, Translation, TranslationVerbose
+import whisper
+from faster_whisper import WhisperModel
+from elevenlabs.client import ElevenLabs
+from elevenlabs import Voice, VoiceSettings, save
+from elevenlabs.client import ElevenLabs
+import subprocess
+import pygame
+from time import sleep
+from typing import Literal, Union
+from carlos_tools_misc import get_file_path
+from pydub import AudioSegment
+import torch
+import time
+import os
+from yt_dlp import YoutubeDL
+from youtube_transcript_api import YouTubeTranscriptApi
+
+def download_video(url: str, directory: str | None = None, file_name: str | None = None) -> str:
+    """Download a video from a URL using the best video and audio streams and merges them using the yt_dlp library."""
+    if directory is None:
+        directory = os.getcwd()
+    if file_name is None:
+        file_name = "%(title)s"
+    file_path = os.path.join(directory, file_name) + ".%(ext)s"
+    print(f"{file_path=}")
+    # Define download options
+    ydl_opts: dict = {
+        "outtmpl": file_path,  # Output template,
+        # "format": "bv+ba/b"
+    }
+
+    # Download the video and capture the filename
+    with YoutubeDL(ydl_opts) as ydl:
+        # ydl.download(url)
+        info = ydl.extract_info(url, download=True)
+        filename = ydl.prepare_filename(info)  # Get the full filename
+
+    print("Video downloaded at:", filename)
+    return filename
+
+
+def download_audio(url: str, directory: str | None = None, file_name: str | None = None, keepvideo: bool = False) -> str:
+    """Download the audio of a video """
+    if directory is None:
+        directory = os.getcwd()
+    if file_name is None:
+        file_name = "%(title)s"
+    file_path = os.path.join(directory, file_name) + ".%(ext)s"
+    print(f"{file_path=}")
+    # Define download options
+    ydl_opts: dict = {
+        'format': 'bestaudio/best',       # Download the best audio format available
+        "outtmpl": file_path,  # Output template     
+        'keepvideo': keepvideo,  # Keep the original file after conversion   
+        'postprocessors': [
+        {
+            'key': 'FFmpegExtractAudio',
+            'preferredcodec': 'mp3',
+            'preferredquality': '32',  # Bitrate in kbps
+        }
+        ]
+    }
+
+    # Download the video and capture the filename
+    with YoutubeDL(ydl_opts) as ydl:
+        # ydl.download(url)
+        info = ydl.extract_info(url, download=True)
+        original_filename = ydl.prepare_filename(info)  # Get the full filename
+        downsampled_filename = ydl.prepare_filename(info).rsplit(".", 1)[0] + ".mp3"  # Ensure .mp3 extension
+
+    print(f"Original audio of video downloaded at {original_filename}")
+    print(f"Audio of video downloaded as 32k bitrate mp3 at {downsampled_filename}")
+    return original_filename, downsampled_filename
+
+def yt_transcript(url: str, directory: str | None = None, file_name: str | None = None) -> tuple[str, str]:
+    """Get the transcript of a youtube video. Returns a tuple with the transcript in text format and the file path of the saved file."""
+    # get the video id
+    try:
+        video_id = url.split("v=")[1]
+    except IndexError:
+        raise FileNotFoundError("Video not found or not compatible format.")
+    if directory is None:
+        directory = os.getcwd()
+    if file_name is None:
+        file_name = "transcript_" + video_id + ".txt"
+    file_path = os.path.join(directory, file_name)
+    # get the transcript
+    # transcript = YouTubeTranscriptApi.get_transcript(video_id)
+    ytt_api = YouTubeTranscriptApi()
+    fetched_transcript = ytt_api.fetch(video_id)
+    if not fetched_transcript:
+        raise FileNotFoundError("Transcript not found for this video.")
+    
+    # extract the transcript in text format
+    text: str = ""
+    for snippet in fetched_transcript.snippets:
+        text += f"{snippet.start:10.1f}: {snippet.text}\n"
+    # save transcript to file
+    with open(file_path,"w") as f:
+        f.write(text)
+    print(f"Transcript for video {video_id} downloaded to {file_path}")
+    return text, file_path
+
+
+
+
+def downsample(directory: str, input_file: str, output_file: str, sample_rate: int = 16000, bit_rate: str = '32k') -> None:
+    '''Downsamples an audio file to 16 kHz mono with a bit rate of 32 kbps.
+        -i input_file: Specifies the input file.
+        -ar 16000: Sets the audio sample rate to 16 kHz.
+        -ac 1: Converts the audio to mono (1 channel).
+        -b:a 32k: Sets the audio bit rate to 32 kbps.
+        output_file: Specifies the output file.
+    '''
+    input_path = get_file_path(directory, input_file)
+    output_path = get_file_path(directory, output_file)
+    
+    command = [
+        'ffmpeg', '-i', input_path,
+        '-ar', str(sample_rate),
+        '-ac', '1',
+        '-b:a', bit_rate,
+        output_path
+    ]
+    subprocess.run(command, check=True)
+
+def trim_media_to_duration(file_path, max_duration_secs=60):
+    """
+    Trims an audio or video file to a specified maximum duration.
+    For video files, extracts and trims just the audio track.
+    
+    Parameters:
+    -----------
+    file_path : str
+        Path to the audio or video file
+    max_duration_secs : int, optional
+        Maximum duration in seconds (default: 60 seconds)
+        
+    Returns:
+    --------
+    str
+        Path to the trimmed audio file
+    """
+    # Get file extension
+    file_ext = os.path.splitext(file_path)[1].lower()
+    is_trimmed = False
+    
+    try:
+        # Load the file (pydub will extract audio from video if needed)
+        media = AudioSegment.from_file(file_path)
+        
+        # Convert max duration to milliseconds
+        max_duration_ms = max_duration_secs * 1000
+        
+        # Check if media is longer than the maximum duration
+        if len(media) > max_duration_ms:
+            print(
+            f"Original recording of {round(len(media)/1000)} secs is too long. Cutting it to the first {max_duration_secs} secs..."
+            )
+            # Trim to maximum duration
+            trimmed_media = media[:max_duration_ms]
+            
+            # Create a new filename for the trimmed media
+            base_path = os.path.splitext(file_path)[0]
+            # Always output as audio file (mp3) regardless of input
+            trimmed_path = f"{base_path}_trimmed.mp3"
+            
+            # Export the trimmed media as mp3
+            trimmed_media.export(trimmed_path, format="mp3")
+            is_trimmed = True
+            return trimmed_path, is_trimmed
+        
+        # If media is already audio
+        if file_ext in ['.mp3', '.wav', '.flac', '.ogg']:
+            # Audio file - return original
+            return file_path, is_trimmed
+        else:
+            # Video file - extract audio to mp3
+            audio_path = f"{os.path.splitext(file_path)[0]}_audio.mp3"
+            media.export(audio_path, format="mp3")
+            print(f"Extracted audio from original media to {audio_path}")
+            return audio_path, is_trimmed
+            
+    except Exception as e:
+        print(f"Error processing file: {e}")
+        # Return original file path if any error occurs
+        return file_path, is_trimmed
+
+def chunk_text(text: str, chunk_size: int = 4096) -> list:
+    """Chunk text into smaller pieces, ensuring splits occur after periods or return characters."""
+    chunks = []
+    start = 0
+
+    while start < len(text):
+        end = min(start + chunk_size, len(text))
+        if end < len(text):
+            # Find the last period or return character within the chunk
+            split_point = max(text.rfind('.', start, end), text.rfind('\n', start, end))
+            if split_point == -1:
+                split_point = end
+            else:
+                split_point += 1  # Include the period or return character in the chunk
+        else:
+            split_point = end
+
+        chunks.append(text[start:split_point].strip())
+        start = split_point
+
+    return chunks
+
+
+def text_to_speech(text: str, directory: str, file_name: str, speed: float = 1.0) -> None:
+    """Convert text to speech using OpenAI's library."""
+    if text == "":
+        raise ValueError("Text cannot be empty")
+    l = len(text)
+    if l> 4096:
+        raise ValueError(f"Text length ({l}) too long for TTS-1")
+    file_path: str = get_file_path(directory, file_name)
+    client = OpenAI()
+    response = client.audio.speech.create(model="tts-1", voice="echo", input=text, speed=speed)
+    response.stream_to_file(file_path)
+
+
+def text_to_speech_elevenlabs(text: str, directory: str, file_name: str) -> None:
+    """Convert text to speech using Eleven Labs' library."""
+    if text == "":
+        raise ValueError("Text cannot be empty")             
+    l = len(text)
+    if l> 5000:
+        raise ValueError(f"Text length ({l}) too long for Eleven Labs")
+    
+    file_path: str = get_file_path(directory, file_name)
+    client = ElevenLabs()
+
+    audio = client.generate(
+        text=text,
+        voice=Voice(
+            voice_id='IKne3meq5aSn9XLyUdCD',
+            settings=VoiceSettings(stability=0.71, similarity_boost=0.5, style=0.0, use_speaker_boost=True)
+        )
+    )   
+    save(audio,file_path)
+
+    
+def play_mp3(directory: str, file_name: str) -> None:
+    """Play an mp3 file."""
+    file_path: str = get_file_path(directory, file_name)
+    pygame.mixer.init()
+    pygame.mixer.music.load(file_path)
+    pygame.mixer.music.play()
+
+
+def wait_for_audio_to_finish() -> None:
+    while pygame.mixer.music.get_busy():
+        sleep(10)
+
+
+def local_detect_language(
+    file_path: str,
+    model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2'] = "base",
+    device: Literal["cuda", "cpu", "auto"] = "cpu" if torch.cuda.is_available() else "cpu",
+) -> dict:
+    """Detect language of an audio file using OpenAI's Whisper library."""
+    model = whisper.load_model(
+        model_size,
+        device=device
+    )
+    audio = whisper.load_audio(file_path)
+    audio = whisper.pad_or_trim(audio)
+
+    # make log-Mel spectrogram and move to the same device as the model
+    mel = whisper.log_mel_spectrogram(audio).to(model.device)
+    _, probs = model.detect_language(mel)
+    
+    detected_language = max(probs, key=probs.get)
+    confidence = probs[detected_language]
+    
+    return {
+        "language": detected_language,
+        "probability": confidence,
+        "all_probabilities": probs
+    }
+
+def local_whisper_transcribe(
+        file_path: str,
+        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large', "large-v3-turbo","turbo"] = "large-v3", 
+        device: Literal["cuda", "cpu", "auto"] = "auto",
+        verbose: bool = True,
+        prompt: str = None,
+        language: str = None,
+    ):
+    """Converts speech to text using local original whisper model."""
+    # check if cuda is available
+    if device == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA not available")
+    print(f"Running whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {verbose=}\n {prompt=}\n {language=}\n")
+    model = whisper.load_model(
+        name=model_size, 
+        device=device,
+        )
+    start = time.time()  # <-- Start timing after model is loaded
+    transcription =  model.transcribe(
+        audio = file_path,
+        verbose = verbose, 
+        initial_prompt=prompt,
+        language=language,
+        task="transcribe",
+        beam_size=5, # matches faster-whisper default
+        )
+    inference_time = time.time() - start  # <-- End timing after inference
+    text: str = transcription["text"]
+    language: str = transcription["language"]
+
+    return {
+        "text":text,
+        "language":language, 
+        "transcription":transcription,
+        "inference_time": inference_time  
+        }
+
+def local_whisper_translate(
+        file_path: str,
+        model_size: Literal['tiny.en', 'tiny', 'base.en', 'base', 'small.en', 'small', 'medium.en', 'medium', 'large-v1', 'large-v2', 'large-v3', 'large', "large-v3-turbo","turbo"] = "large-v3", 
+        device: Literal["cuda", "cpu", "auto"] = "auto",
+        verbose: bool = True,
+        prompt: str = None,
+        language: str = None,
+    ):
+    """Converts speech to text using local original whisper model."""
+    # check if cuda is available
+    if device == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA not available")
+    print(f"Running whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {verbose=}\n {prompt=}\n {language=}\n")
+    model = whisper.load_model(
+        name=model_size, 
+        device=device,
+        )
+    start = time.time()  # <-- Start timing after model is loaded
+    translation =  model.transcribe(
+        audio = file_path,
+        verbose = verbose, 
+        initial_prompt=prompt,
+        language=language,
+        task="translate",  
+        beam_size=5, # matches faster-whisper default
+        )
+    inference_time = time.time() - start  # <-- End timing after inference
+    text: str = translation["text"]
+    language: str = translation["language"]
+
+    return {
+        "text":text,
+        "language":language, 
+        "translation":translation,
+        "inference_time": inference_time,
+        }
+
+
+def local_faster_whisper_transcribe(
+        file_path: str, 
+        model_size: Literal["large-v3", "distil-large-v3", "deepdml/faster-whisper-large-v3-turbo-ct2"] = "distil-large-v3", 
+        device: Literal["cuda", "cpu", "auto"] = "auto",
+        language: str = None,
+        prompt: str = None,
+        ):
+    """Converts speech to text using local faster whisper model.""" 
+    # check if cuda is available
+    # device: Literal["cuda", "cpu"]
+    if device == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA not available")
+    print(f"Running faster whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {language=}\n {prompt=}\n")
+    model = WhisperModel(
+        model_size_or_path=model_size, 
+        device=device, 
+        compute_type="float16" if device == "cuda" else "int8",  # Use float16 for CUDA, int8 for CPU
+        )
+    start = time.time()  # <-- Start timing after model is loaded
+    segments, info = model.transcribe(
+        audio=file_path, 
+        language=language, 
+        task="transcribe",
+        initial_prompt=prompt,
+        )
+    collected_segments: list = []
+    segment_objects: list = []  # Store actual segment objects
+    
+    for segment in segments:
+        collected_segments.append(segment.text)
+        # Store segment data as dict to preserve it
+        segment_objects.append({
+            'start': segment.start,
+            'end': segment.end,
+            'text': segment.text
+        })
+        # print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
+    
+    inference_time = time.time() - start  # <-- End timing after inference
+    text = "".join(collected_segments)
+    detected_language: str = info.language
+    print(f"Detected language {info.language} with probability {info.language_probability}")
+    
+    return {
+        "text": text,
+        "language": detected_language,
+        "transcription": {
+            "segments": segment_objects,  # Return list of dicts instead of consumed iterator
+            "info": info
+        },
+        "inference_time": inference_time,
+    }
+
+
+def local_faster_whisper_translate(
+        file_path: str, 
+        model_size: Literal["large-v3", "distil-large-v3"] = "distil-large-v3", 
+        device: Literal["cuda", "cpu", "auto"] = "auto",
+        language: str = None,
+        prompt: str = None,
+        ):
+    """Converts speech to text using local faster whisper model.""" 
+    # check if cuda is available
+    # device: Literal["cuda", "cpu"]
+    if device == "cuda" and not torch.cuda.is_available():
+        raise ValueError("CUDA not available")
+    print(f"Running faster whisper model locally. \n{file_path=}\n {model_size=}\n {device=}\n {language=}\n {prompt=}\n")
+    model = WhisperModel(
+        model_size_or_path=model_size, 
+        device=device, 
+        compute_type="float16" if device == "cuda" else "int8",  # Use float16 for CUDA, int8 for CPU
+        )  # Use int8 for CPU to save memory and speed up inference
+    start = time.time()  # <-- Start timing after model is loaded
+    segments, info = model.transcribe(
+        audio=file_path, 
+        language=language, 
+        task="translate",
+        initial_prompt=prompt,
+        )
+    
+    collected_segments: list = []
+    segment_objects: list = []  # Store actual segment objects
+    
+    for segment in segments:
+        collected_segments.append(segment.text)
+        # Store segment data as dict to preserve it
+        segment_objects.append({
+            'start': segment.start,
+            'end': segment.end,
+            'text': segment.text
+        })
+        # print(f"[{segment.start:.2f}s -> {segment.end:.2f}s] {segment.text}")
+    
+    inference_time = time.time() - start  # <-- End timing after inference
+    text = "".join(collected_segments)
+    detected_language: str = info.language
+    print(f"Detected language {info.language} with probability {info.language_probability}")
+    
+    return {
+        "text": text,
+        "language": detected_language,
+        "translation": {
+            "segments": segment_objects,  # Return list of dicts instead of consumed iterator
+            "info": info
+        },
+        "inference_time": inference_time,
+    }
+
+def OpenAI_transcribe(
+    file_path: str, 
+    model: Literal["gpt-4o-mini-transcribe", "gpt-4o-transcribe", "whisper-1"], 
+    response_format: Literal["json", "text", "srt", "verbose_json", "vtt"] = "text",
+    language: str | None = None, 
+) -> dict[str, Union[str, Transcription, TranscriptionVerbose]]:
+    """
+    Transcribe audio using OpenAI's transcription models.
+
+    Parameters:
+        model (Literal): Model to use. Options: 'gpt-4o-mini-transcribe', 'gpt-4o-transcribe', or 'whisper-1'.
+        file_path (str): Path to the audio file to be transcribed.
+        language (str, optional): Language of the audio. If None, OpenAI will attempt auto-detection.
+        response_format (Literal): Desired format of the transcription output. 
+            For GPT-4o models, valid options are 'json' and 'text'.
+            For Whisper-1, additional options include 'srt', 'verbose_json', and 'vtt'. Default is 'text'.
+
+    Returns:
+        Union[str, Transcription, TranscriptionVerbose]: 
+            - Returns a string if `response_format` is 'text', 'srt', or 'vtt'.
+            - Returns a `Transcription` object if `response_format` is 'json'.
+            - Returns a `TranscriptionVerbose` object if `response_format` is 'verbose_json'.
+    """
+    from openai import OpenAI
+    if model in ["gpt-4o-mini-transcribe", "gpt-4o-transcribe"] and response_format not in ["json", "text"]:
+        raise ValueError("For gpt-4o models, response_format must be 'json' or 'text'.")
+    
+    client = OpenAI()
+    start= time.time()  # Start timing before the transcription request
+    with open(file_path, "rb") as audio_file:
+        transcription = client.audio.transcriptions.create(
+            file=audio_file, 
+            model=model, 
+            response_format=response_format,
+            language=language,
+        )    
+    inference_time = time.time() - start  # End timing after the transcription request
+    if  isinstance(transcription, str):    
+        # If the transcription is a string, it is the text itself
+        text = transcription
+        language = "unknown"    
+    else:
+        # If the transcription is an object, extract text and language attributes
+        text=transcription.text
+        language = getattr(transcription, 'language', 'unknown')
+    
+    return {
+        "text":text, 
+        "language":language,
+        "transcription":transcription,
+        "inference_time": inference_time
+        }
+
+def OpenAI_translate(
+    file_path: str, 
+    model: Literal["gpt-4o-mini-transcribe", "gpt-4o-transcribe", "whisper-1"], 
+    response_format: Literal["json", "text", "srt", "verbose_json", "vtt"] = "text",
+    language: str | None = None, 
+) -> dict[str, Union[str, Translation, TranslationVerbose]]:
+    """
+    Translate audio using OpenAI's translation models.
+
+    Parameters:
+        model (Literal): Model to use. Options: 'whisper-1'.
+        file_path (str): Path to the audio file to be transcribed.
+        language (str, optional): Language of the audio. If None, OpenAI will attempt auto-detection.
+        response_format (Literal): Desired format of the translation output. 'json', 'text', 'srt', 'verbose_json', and 'vtt'. Default is 'text'.
+
+    Returns:
+        Union[str, Translation, TranslationVerbose]: 
+            - Returns a string if `response_format` is 'text', 'srt', or 'vtt'.
+            - Returns a `Translation` object if `response_format` is 'json'.
+            - Returns a `TranslationVerbose` object if `response_format` is 'verbose_json'.
+    """
+    from openai import OpenAI
+    if model != "whisper-1":
+        raise ValueError("Only model available for translation is 'whisper-1'.")
+    
+    client = OpenAI()
+    start= time.time()  # Start timing before the transcription request
+    with open(file_path, "rb") as audio_file:
+        translation = client.audio.translations.create(
+            file=audio_file, 
+            model=model, 
+            response_format=response_format,
+        )    
+    inference_time = time.time() - start  # End timing after the transcription request
+    if  isinstance(translation, str):    
+        # If the transcription is a string, it is the text itself
+        text = translation
+        language = "unknown"    
+    else:
+        # If the transcription is an object, extract text and language attributes
+        text=translation.text
+        language = getattr(translation, 'language', 'unknown') # always "en" for translations, when available
+    
+    return {
+        "text":text, 
+        "language":language,
+        "translation":translation,
+        "inference_time": inference_time,
+        }
+
+
+
+def increase_volume(directory:str, input_file, output_file, db_increase):
+    # Load the audio file
+    audio = AudioSegment.from_file(os.path.join(directory,input_file))
+    
+    # Increase the volume
+    louder_audio = audio + db_increase  # Increase volume by db_increase decibels
+    
+    # Export the result
+    louder_audio.export(os.path.join(directory,output_file), format="mp3")
+    print(f"Volume increased by {db_increase} dB and saved to {output_file}")
+
+def main():
+    print("this is a library of functions for working with audios and videos. This is an example of of such functions")
+    url: str = input("url of video to download: ")
+    if url == "":
+        print("No url entered, using default video Shake it off by Taylor Swift")
+        url = "https://www.youtube.com/watch?v=nfWlot6h_JM"
+    print("downloading video, using best video and audio streams and merging them...")
+    print("video downloaded to: ",download_video(url))
+    return
+
+if __name__ == "__main__":
+    main()

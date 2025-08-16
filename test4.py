@@ -1,15 +1,15 @@
-from carlos_tools_audio import local_whisper, local_faster_whisper
+from carlos_tools_video import download_video, download_audio , cut_file
 
-def test_local_whisper():
-    # Test the local_whisper function with a sample audio file
-    audio_file = '001-About-me.mp3'  # Replace with your actual audio file path
+URL = "https://www.youtube.com/watch?v=IOPuHLIcrSI"
 
-    # Call the local_whisper function
-    transcription = local_faster_whisper(
-        directory='media',
-        file_name=audio_file,
-    )
-    # Print the transcription
-    print("Transcription:", transcription['text'])
-if __name__ == "__main__":
-    test_local_whisper()
+# original_video_path = download_video(URL)
+
+# print(f"Original video downloaded at: {original_video_path}")
+
+video,audio = download_audio(URL)
+print(f"original audio downloaded at: {video}")
+print(f"downsampled audio at: {audio}")
+
+cutfile = cut_file("",audio,30)
+if cutfile:
+    print(f"Cut file saved at: {cutfile}")
