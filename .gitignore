@@ -19,37 +19,12 @@
 /build/
 /out/
 
-# Ignore package manager directories
-/node_modules/
-/packages/
+# Python virtual environment + caches (the 72k-file flood that tripped VS Code)
+env/
+.venv/
+__pycache__/
+*.py[cod]
+.pytest_cache/
 
-# Ignore log files
-*.log
-
-# Ignore user-specific files
-/.env
-
-# Ignore operating system files
-.DS_Store
-Thumbs.db
-
-# Ignore backup files
-*.bak
-*.swp
-*~
-
-# Ignore sensitive or private information
-secrets.txt
-credentials.json
-
-# Ignore generated documentation
-/docs/
-
-# Ignore any other project-specific files or directories
-/env/
-/venv/
-/__pycache__/
-/.mypy_cache/
-/.pytest_cache/
-/media/
-/private/
+# Gradio app cache
+.gradio/
